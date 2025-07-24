@@ -1,37 +1,37 @@
-# Lokális Terraform könyvtárak
+# Local Terraform directories
 .terraform/
 
-# Állapotfájlok (érzékeny adatokat tartalmazhatnak)
+# State files (contains semsitive data)
 *.tfstate
 *.tfstate.*
 
-# Lock fájlok
+# Lock files
 .terraform.lock.hcl
 .terraform.tfstate.lock.info
 
-# Változófájlok (gyakran érzékeny adatokat tartalmaznak)
+# Variable files (usually contains semsitive data)
 *.tfvars
 *.tfvars.json
 
-# Lokális override fájlok
+# Local override files
 override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
 
-# Crash logok
+# Crash logs
 crash.log
 crash.*.log
 
-# Plan fájlok (terraform plan -out=tfplan)
+# Plan files (terraform plan -out=XXX.tfplan)
 *.tfplan
 
-# CLI konfigurációs fájlok
+# CLI configuration files
 .terraformrc
 terraform.rc
 
-# Egyéb ideiglenes vagy rendszerfájlok
+# Other temporary or systemfiles
 .DS_Store
 
-# Hitelesítő adatok
+# Credentials
 terraform.tfvars
