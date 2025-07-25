@@ -41,3 +41,16 @@ resource "azurerm_resource_group" "app_grp" {
   name     = "app-grp"
   location = "West Europe"
 }
+
+resource "azurerm_storage_account" "storage_account" {
+  name                     = "tformstore2507251019"
+  resource_group_name      = "app-grp"
+  location                 = "West Europe"
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+
+  tags = {
+    purpose     = "learning"
+    environment = "dev"
+  }
+}
