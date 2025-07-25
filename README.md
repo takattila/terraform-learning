@@ -20,12 +20,14 @@ tenant_id       = "<AZURE_ENTRA_APP_TENANT_ID"  # Select your registered app's D
 
 ## Terraform commands
 
+### Create Storage Account
+
 ```powershell
 # Check changes
-terraform plan -out main.tfplan
+terraform plan -out strg-main.tfplan
 
 # Deploy resources
-terraform apply -auto-approve .\main.tfplan
+terraform apply -auto-approve .\strg-main.tfplan
 
 # Remove resources
 terraform destroy -auto-approve
