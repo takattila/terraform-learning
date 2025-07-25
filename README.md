@@ -25,10 +25,10 @@ tenant_id       = "<AZURE_ENTRA_APP_TENANT_ID"  # Select your registered app's D
 terraform plan -out main.tfplan
 
 # Deploy resources
-terraform apply .\main.tfplan
+terraform apply -auto-approve .\main.tfplan
 
 # Remove resources
-terraform destroy
+terraform destroy -auto-approve
 ```
 
 # HOWTOs
