@@ -38,8 +38,9 @@ variable "tenant_id" {
 }
 
 locals {
-  raw_ts   = timestamp()
-  short_ts = formatdate("YYMMDDhhmm", local.raw_ts)
+  raw_ts       = timestamp()
+  short_ts     = formatdate("YYMMDDhhmm", local.raw_ts)
+  storage_name = "tformstore${local.short_ts}"
 }
 
 resource "azurerm_resource_group" "app_grp" {
@@ -48,8 +49,8 @@ resource "azurerm_resource_group" "app_grp" {
 }
 
 resource "azurerm_storage_account" "storage_account" {
-  name                     = "tformstore${local.short_ts}"
-  resource_group_name      = "app-grp"
+  name                     = local.storage_name
+  resource_group_name      = azurerm_resource_group.app_grp.name
   location                 = "West Europe"
   account_tier             = "Standard"
   account_replication_type = "LRS"
@@ -58,4 +59,18 @@ resource "azurerm_storage_account" "storage_account" {
     purpose     = "learning"
     environment = "dev"
   }
+}
+
+resource "azurerm_storage_container" "data" {
+  name                  = "data"
+  storage_account_id    = azurerm_storage_account.storage_account.id
+  container_access_type = "blob"
+}
+
+resource "azurerm_storage_blob" "sample" {
+  name                   = "sample.txt"
+  source_content         = "Hello world!"
+  storage_account_name   = azurerm_storage_account.storage_account.name
+  storage_container_name = azurerm_storage_container.data.name
+  type                   = "Block"
 }
