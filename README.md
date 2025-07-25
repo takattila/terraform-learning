@@ -4,7 +4,8 @@ This repository has been crated to study terraform by the help of [Azure Infrast
 
 # Docs
 
-[Terraform Registry / Azure Provider](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs)
+- [Terraform Registry / Azure Provider](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs)
+- [Course GitHub page](https://github.com/cloudxeus/terraform-azure)
 
 # Usage
 
