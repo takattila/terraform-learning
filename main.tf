@@ -41,17 +41,18 @@ locals {
   raw_ts       = timestamp()
   short_ts     = formatdate("YYMMDDhhmm", local.raw_ts)
   storage_name = "tformstore${local.short_ts}"
+  location     = "West Europe"
 }
 
 resource "azurerm_resource_group" "app_grp" {
   name     = "app-grp"
-  location = "West Europe"
+  location = local.location
 }
 
 resource "azurerm_storage_account" "storage_account" {
   name                     = local.storage_name
   resource_group_name      = azurerm_resource_group.app_grp.name
-  location                 = "West Europe"
+  location                 = local.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
   depends_on               = [azurerm_resource_group.app_grp]
