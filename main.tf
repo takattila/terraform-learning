@@ -54,7 +54,7 @@ resource "azurerm_storage_account" "storage_account" {
   location                 = "West Europe"
   account_tier             = "Standard"
   account_replication_type = "LRS"
-
+  depends_on               = [azurerm_resource_group.app_grp]
   tags = {
     purpose     = "learning"
     environment = "dev"
@@ -65,6 +65,7 @@ resource "azurerm_storage_container" "data" {
   name                  = "data"
   storage_account_id    = azurerm_storage_account.storage_account.id
   container_access_type = "blob"
+  depends_on            = [azurerm_storage_account.storage_account]
 }
 
 resource "azurerm_storage_blob" "sample" {
@@ -73,4 +74,5 @@ resource "azurerm_storage_blob" "sample" {
   storage_account_name   = azurerm_storage_account.storage_account.name
   storage_container_name = azurerm_storage_container.data.name
   type                   = "Block"
+  depends_on             = [azurerm_storage_container.data]
 }
