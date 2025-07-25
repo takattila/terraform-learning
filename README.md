@@ -9,7 +9,7 @@ This repository has been crated to study terraform by the help of [Azure Infrast
 
 # Usage
 
-## Create a terraform.tfvars file
+## Create a terraform.tfvars file in the root of the project
 
 Content of the `terraform.tfvars` file:
 ```
@@ -21,17 +21,37 @@ tenant_id       = "<AZURE_ENTRA_APP_TENANT_ID"  # Select your registered app's D
 
 ## Terraform commands
 
+### Initialize project
+
+```powershell
+cd projects/<PROJECT_NAME>
+terraform init
+```
+
 ### Create Storage Account
 
 ```powershell
 # Check changes
-terraform plan -out strg-main.tfplan
+terraform -chdir="projects/storage" plan -var-file="../../terraform.tfvars" -out="storage.tfplan"
 
 # Deploy resources
-terraform apply -auto-approve .\strg-main.tfplan
+terraform -chdir="projects/storage" apply -var-file="../../terraform.tfvars" -auto-approve storage.tfplan
 
 # Remove resources
-terraform destroy -auto-approve
+terraform -chdir="projects/storage" destroy -var-file="../../terraform.tfvars" -auto-approve
+```
+
+### Create VM Infra
+
+```powershell
+# Check changes
+terraform -chdir="projects/vm-infra" plan -var-file="../../terraform.tfvars" -out="vm-infra.tfplan"
+
+# Deploy resources
+terraform -chdir="projects/vm-infra" apply -var-file="../../terraform.tfvars" -auto-approve vm-infra.tfplan
+
+# Remove resources
+terraform -chdir="projects/vm-infra" destroy -var-file="../../terraform.tfvars" -auto-approve
 ```
 
 # HOWTOs
