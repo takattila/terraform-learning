@@ -10,13 +10,6 @@ This repository has been crated to study terraform by the help of [Azure Infrast
 
 ## Create a terraform.tfvars file
 
-On Azure Portal,
-- Go to your subscription and get the Subscription ID
-- Register app in "Microsoft Entra ID" (earlier called as "Azure Active Directory")
-  - Microsoft Entra ID / App registrations / New registration
-- In your registered app, click the Client credentials / Certificates & secrets / New client secret
-  - Add a client secret
-
 Content of the `terraform.tfvars` file:
 ```
 subscription_id = "<AZURE_SUBSCRIPTION_ID>"     # Your Azure Subscription ID
@@ -37,3 +30,43 @@ terraform apply .\main.tfplan
 # Remove resources
 terraform destroy
 ```
+
+# HOWTOs
+
+## App registrations
+
+On Azure Portal,
+- Go to your subscription and get the Subscription ID
+- Register app in "Microsoft Entra ID" (earlier called as "Azure Active Directory")
+  - Microsoft Entra ID / App registrations / New registration -> "terraform"
+- In your registered app, click the Client credentials / Certificates & secrets / New client secret
+  - Add a client secret
+
+## Assign the Contributor role to an application 
+
+To assign the Contributor role to the "terraform" application in Microsoft Entra ID (Azure AD) using the Azure Portal, follow these steps:
+
+1. Assign a Role in Subscription:
+
+- In Azure Portal, navigate to Subscriptions from the left-hand menu.
+- Select the subscription where you want to assign the role.
+
+2. Access Control (IAM):
+
+- Within the subscription portal, click on Access control (IAM) from the left-hand menu.
+- Click on Add role assignment to open the "Add role assignment" pane.
+
+3. Select Contributor Role:
+
+- In the "Role" tab, select "Contributor" from the list and click Next.
+
+4. Assign to Your Application:
+
+- In the "Members" tab, select User, group, or service principal.
+- Click on Select members, search for and select your "terraform" application.
+- Click Select to confirm, then click Next.
+
+5. Review and Assign:
+
+- In the "Review + assign" tab, review your settings.
+- Click Review + assign to apply the role.
