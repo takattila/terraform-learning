@@ -37,13 +37,18 @@ variable "tenant_id" {
   description = "Azure Tenant ID"
 }
 
+locals {
+  raw_ts   = timestamp()
+  short_ts = formatdate("YYMMDDhhmm", local.raw_ts)
+}
+
 resource "azurerm_resource_group" "app_grp" {
   name     = "app-grp"
   location = "West Europe"
 }
 
 resource "azurerm_storage_account" "storage_account" {
-  name                     = "tformstore2507251019"
+  name                     = "tformstore${local.short_ts}"
   resource_group_name      = "app-grp"
   location                 = "West Europe"
   account_tier             = "Standard"
