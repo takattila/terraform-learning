@@ -72,12 +72,23 @@ resource "azurerm_network_interface" "app_nic" {
   ]
 }
 
+data "template_cloudinit_config" "linuxconfig" {
+  gzip          = true
+  base64_encode = true
+
+  part {
+    content_type = "text/cloud-config"
+    content      = "packages: ['nginx']"
+  }
+}
+
 resource "azurerm_linux_virtual_machine" "vm_linux" {
   name                = "vm-linux"
   resource_group_name = local.rg_name
   location            = local.location
   size                = "Standard_D2s_v3"
   admin_username      = "linuxuser"
+  custom_data         = data.template_cloudinit_config.linuxconfig.rendered
   network_interface_ids = [
     azurerm_network_interface.app_nic.id,
   ]
