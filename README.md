@@ -19,6 +19,8 @@ client_secret   = "<AZURE_ENTRA_APP_SECRET"     # Select your registered app's C
 tenant_id       = "<AZURE_ENTRA_APP_TENANT_ID"  # Select your registered app's Directory (tenant) ID
 ```
 
+**WARNING! - For authentication purposes, please register a new app (if not registered yet) in Microsoft Entra ID. For more information, refer to the [HOWTOs section](#howtos).**
+
 ## Terraform commands
 
 ### Initialize project
