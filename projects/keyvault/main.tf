@@ -1,5 +1,3 @@
-data "azurerm_client_config" "current" {}
-
 resource "azurerm_resource_group" "app_grp" {
   name     = local.rg_name
   location = local.location

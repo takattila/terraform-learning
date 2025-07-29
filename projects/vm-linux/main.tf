@@ -1,5 +1,3 @@
-data "azurerm_client_config" "current" {}
-
 resource "azurerm_resource_group" "app_grp" {
   name     = local.rg_name
   location = local.location
@@ -70,16 +68,6 @@ resource "azurerm_network_interface" "app_nic" {
     azurerm_subnet.SubnetA,
     azurerm_public_ip.app_pub_ip
   ]
-}
-
-data "template_cloudinit_config" "linuxconfig" {
-  gzip          = true
-  base64_encode = true
-
-  part {
-    content_type = "text/cloud-config"
-    content      = "packages: ['nginx']"
-  }
 }
 
 resource "azurerm_linux_virtual_machine" "vm_linux" {
