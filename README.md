@@ -9,9 +9,9 @@ This repository has been crated to study terraform by the help of [Azure Infrast
 
 # Usage
 
-## Create a terraform.tfvars file in the root of the project
+## Create a credentials.tfvars file in the root of the project
 
-Content of the `terraform.tfvars` file:
+Content of the `credentials.tfvars` file:
 ```
 subscription_id = "<AZURE_SUBSCRIPTION_ID>"     # Your Azure Subscription ID
 client_id       = "<AZURE_ENTRA_APP_CLIENT_ID>" # Select your registered app's get its Client ID
@@ -32,26 +32,26 @@ terraform init
 
 ```powershell
 # Check changes
-terraform -chdir="projects/storage" plan -var-file="../../terraform.tfvars" -out="storage.tfplan"
+terraform -chdir="projects/storage" plan -var-file="../../credentials.tfvars" -out="storage.tfplan"
 
 # Deploy resources
-terraform -chdir="projects/storage" apply -var-file="../../terraform.tfvars" -auto-approve "storage.tfplan"
+terraform -chdir="projects/storage" apply -var-file="../../credentials.tfvars" -auto-approve "storage.tfplan"
 
 # Remove resources
-terraform -chdir="projects/storage" destroy -var-file="../../terraform.tfvars" -auto-approve
+terraform -chdir="projects/storage" destroy -var-file="../../credentials.tfvars" -auto-approve
 ```
 
 ### VM Infra
 
 ```powershell
 # Check changes
-terraform -chdir="projects/vm-infra" plan -var-file="../../terraform.tfvars" -out="vm-infra.tfplan"
+terraform -chdir="projects/vm-infra" plan -var-file="../../credentials.tfvars" -out="vm-infra.tfplan"
 
 # Deploy resources
-terraform -chdir="projects/vm-infra" apply -var-file="../../terraform.tfvars" -auto-approve "vm-infra.tfplan"
+terraform -chdir="projects/vm-infra" apply -var-file="../../credentials.tfvars" -auto-approve "vm-infra.tfplan"
 
 # Remove resources
-terraform -chdir="projects/vm-infra" destroy -var-file="../../terraform.tfvars" -auto-approve
+terraform -chdir="projects/vm-infra" destroy -var-file="../../credentials.tfvars" -auto-approve
 ```
 
 # HOWTOs

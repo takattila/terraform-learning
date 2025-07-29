@@ -34,4 +34,4 @@ terraform.rc
 .DS_Store
 
 # Credentials
-terraform.tfvars
+credentials.tfvars
