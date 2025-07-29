@@ -36,4 +36,4 @@ terraform.rc
 # Credentials
 credentials.tfvars
 linuxkey.pem
-vm-win.rdp
+*.rdp

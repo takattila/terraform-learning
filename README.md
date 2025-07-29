@@ -37,7 +37,7 @@ terraform plan -var-file="credentials.tfvars" -target="module.keyvault" -out="ke
 terraform apply -var-file="credentials.tfvars" -auto-approve "keyvault.tfplan"
 
 # Print output
-terraform output -raw keyvault_rdp_file
+terraform output -raw keyvault_rdp_file > keyvault.rdp
 
 # Remove resources
 terraform destroy -var-file="credentials.tfvars" -target="module.keyvault" -auto-approve
@@ -85,7 +85,7 @@ terraform plan -var-file="credentials.tfvars" -target="module.vm_win" -out="vm-w
 terraform apply -var-file="credentials.tfvars" -auto-approve "vm-win.tfplan"
 
 # Print output
-terraform output -raw rdp_file > vm-win.rdp
+terraform output -raw vm_win_rdp_file > vm-win.rdp
 
 # Remove resources
 terraform destroy -var-file="credentials.tfvars" -target="module.vm_win" -auto-approve
