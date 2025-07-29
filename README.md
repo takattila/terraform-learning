@@ -24,7 +24,6 @@ tenant_id       = "<AZURE_ENTRA_APP_TENANT_ID"  # Select your registered app's D
 ### Initialize project
 
 ```powershell
-cd projects/<PROJECT_NAME>
 terraform init
 ```
 
@@ -32,64 +31,64 @@ terraform init
 
 ```powershell
 # Check changes
-terraform -chdir="projects/keyvault" plan -var-file="../../credentials.tfvars" -out="keyvault.tfplan"
+terraform plan -var-file="credentials.tfvars" -target="module.keyvault" -out="keyvault.tfplan"
 
 # Deploy resources
-terraform -chdir="projects/keyvault" apply -var-file="../../credentials.tfvars" -auto-approve "keyvault.tfplan"
+terraform apply -var-file="credentials.tfvars" -auto-approve "keyvault.tfplan"
 
 # Print output
-terraform -chdir="projects/keyvault" output -raw rdp_file > keyvault.rdp
+terraform output -raw keyvault_rdp_file
 
 # Remove resources
-terraform -chdir="projects/keyvault" destroy -var-file="../../credentials.tfvars" -auto-approve
+terraform destroy -var-file="credentials.tfvars" -target="module.keyvault" -auto-approve
 ```
 
 ### Storage Account
 
 ```powershell
 # Check changes
-terraform -chdir="projects/storage" plan -var-file="../../credentials.tfvars" -out="storage.tfplan"
+terraform plan -var-file="credentials.tfvars" -target="module.storage" -out="storage.tfplan"
 
 # Deploy resources
-terraform -chdir="projects/storage" apply -var-file="../../credentials.tfvars" -auto-approve "storage.tfplan"
+terraform apply -var-file="credentials.tfvars" -auto-approve "storage.tfplan"
 
 # Print output
-terraform -chdir="projects/storage" output -raw sample_txt_url
+terraform output -raw sample_txt_url
 
 # Remove resources
-terraform -chdir="projects/storage" destroy -var-file="../../credentials.tfvars" -auto-approve
+terraform destroy -var-file="credentials.tfvars" -target="module.storage" -auto-approve
 ```
 
 ### Linux VM
 
 ```powershell
 # Check changes
-terraform -chdir="projects/vm-linux" plan -var-file="../../credentials.tfvars" -out="vm-linux.tfplan"
+terraform plan -var-file="credentials.tfvars" -target="module.vm_linux" -out="vm-linux.tfplan"
 
 # Deploy resources
-terraform -chdir="projects/vm-linux" apply -var-file="../../credentials.tfvars" -auto-approve "vm-linux.tfplan"
+terraform apply -var-file="credentials.tfvars" -auto-approve "vm-linux.tfplan"
 
 # Print output
-terraform -chdir="projects/vm-linux" output -raw ssh_command
+terraform output -raw ssh_command
 
 # Remove resources
-terraform -chdir="projects/vm-linux" destroy -var-file="../../credentials.tfvars" -auto-approve
+terraform destroy -var-file="credentials.tfvars" -target="module.vm_linux" -auto-approve
 ```
 
 ### Windows VM
 
 ```powershell
 # Check changes
-terraform -chdir="projects/vm-win" plan -var-file="../../credentials.tfvars" -out="vm-win.tfplan"
+terraform plan -var-file="credentials.tfvars" -target="module.vm_win" -out="vm-win.tfplan"
 
 # Deploy resources
-terraform -chdir="projects/vm-win" apply -var-file="../../credentials.tfvars" -auto-approve "vm-win.tfplan"
+terraform apply -var-file="credentials.tfvars" -auto-approve "vm-win.tfplan"
 
 # Print output
-terraform -chdir="projects/vm-win" output -raw rdp_file > vm-win.rdp
+terraform output -raw rdp_file > vm-win.rdp
 
 # Remove resources
-terraform -chdir="projects/vm-win" destroy -var-file="../../credentials.tfvars" -auto-approve
+terraform destroy -var-file="credentials.tfvars" -target="module.vm_win" -auto-approve
 ```
 
 # HOWTOs
