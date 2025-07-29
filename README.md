@@ -82,6 +82,9 @@ terraform -chdir="projects/vm-win" plan -var-file="../../credentials.tfvars" -ou
 # Deploy resources
 terraform -chdir="projects/vm-win" apply -var-file="../../credentials.tfvars" -auto-approve "vm-win.tfplan"
 
+# Print output
+terraform -chdir="projects/vm-win" output -json
+
 # Remove resources
 terraform -chdir="projects/vm-win" destroy -var-file="../../credentials.tfvars" -auto-approve
 ```
