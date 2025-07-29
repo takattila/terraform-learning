@@ -50,6 +50,9 @@ terraform -chdir="projects/storage" plan -var-file="../../credentials.tfvars" -o
 # Deploy resources
 terraform -chdir="projects/storage" apply -var-file="../../credentials.tfvars" -auto-approve "storage.tfplan"
 
+# Print output
+terraform -chdir="projects/storage" output -json
+
 # Remove resources
 terraform -chdir="projects/storage" destroy -var-file="../../credentials.tfvars" -auto-approve
 ```
@@ -62,9 +65,6 @@ terraform -chdir="projects/vm-linux" plan -var-file="../../credentials.tfvars" -
 
 # Deploy resources
 terraform -chdir="projects/vm-linux" apply -var-file="../../credentials.tfvars" -auto-approve "vm-linux.tfplan"
-
-# SSH into Linux VM
-ssh -i "projects/vm-linux/linuxkey.pem" linuxuser@<LINUX_VM_PUBLIC_IP>
 
 # Print output
 terraform -chdir="projects/vm-linux" output -json
@@ -83,7 +83,7 @@ terraform -chdir="projects/vm-win" plan -var-file="../../credentials.tfvars" -ou
 terraform -chdir="projects/vm-win" apply -var-file="../../credentials.tfvars" -auto-approve "vm-win.tfplan"
 
 # Print output
-terraform -chdir="projects/vm-win" output -json
+terraform -chdir="projects/vm-win" output -raw rdp_file > vm-win.rdp
 
 # Remove resources
 terraform -chdir="projects/vm-win" destroy -var-file="../../credentials.tfvars" -auto-approve
