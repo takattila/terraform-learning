@@ -66,6 +66,9 @@ terraform -chdir="projects/vm-linux" apply -var-file="../../credentials.tfvars" 
 # SSH into Linux VM
 ssh -i "projects/vm-linux/linuxkey.pem" linuxuser@<LINUX_VM_PUBLIC_IP>
 
+# Print output
+terraform -chdir="projects/vm-linux" output -json
+
 # Remove resources
 terraform -chdir="projects/vm-linux" destroy -var-file="../../credentials.tfvars" -auto-approve
 ```
