@@ -171,7 +171,7 @@ resource "azurerm_storage_container" "data" {
 
 resource "azurerm_storage_blob" "IIS_Config" {
   name                   = "IIS_Config.ps1"
-  source                 = "IIS_Config.ps1"
+  source                 = "modules/vm-win/IIS_Config.ps1"
   type                   = "Block"
   storage_account_name   = azurerm_storage_account.appstore.name
   storage_container_name = azurerm_storage_container.data.name
