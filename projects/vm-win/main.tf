@@ -8,6 +8,8 @@ resource "azurerm_virtual_network" "app_network" {
   location            = local.location
   resource_group_name = azurerm_resource_group.app_grp.name
   address_space       = ["10.0.0.0/16"]
+
+  depends_on = [azurerm_resource_group.app_grp]
 }
 
 resource "azurerm_subnet" "SubnetA" {
@@ -24,7 +26,8 @@ resource "azurerm_public_ip" "app_pub_ip" {
   resource_group_name = local.rg_name
   location            = local.location
   allocation_method   = "Static"
-  depends_on          = [azurerm_resource_group.app_grp]
+
+  depends_on = [azurerm_resource_group.app_grp]
 }
 
 resource "azurerm_network_interface" "app_interface" {
@@ -52,6 +55,8 @@ resource "azurerm_availability_set" "app_set" {
   resource_group_name          = local.rg_name
   platform_fault_domain_count  = 3
   platform_update_domain_count = 3
+
+  depends_on = [azurerm_resource_group.app_grp]
 }
 
 resource "azurerm_windows_virtual_machine" "app_vm" {
@@ -79,7 +84,6 @@ resource "azurerm_windows_virtual_machine" "app_vm" {
   }
 
   depends_on = [
-    azurerm_resource_group.app_grp,
     azurerm_network_interface.app_interface,
     azurerm_availability_set.app_set
   ]
