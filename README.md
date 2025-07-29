@@ -28,6 +28,19 @@ cd projects/<PROJECT_NAME>
 terraform init
 ```
 
+### Key Vault
+
+```powershell
+# Check changes
+terraform -chdir="projects/keyvault" plan -var-file="../../credentials.tfvars" -out="keyvault.tfplan"
+
+# Deploy resources
+terraform -chdir="projects/keyvault" apply -var-file="../../credentials.tfvars" -auto-approve "keyvault.tfplan"
+
+# Remove resources
+terraform -chdir="projects/keyvault" destroy -var-file="../../credentials.tfvars" -auto-approve
+```
+
 ### Storage Account
 
 ```powershell
