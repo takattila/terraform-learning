@@ -146,3 +146,51 @@ resource "azurerm_network_interface_security_group_association" "nic_nsg_assoc" 
 
   depends_on = [azurerm_network_security_group.vm_nsg]
 }
+
+resource "azurerm_storage_account" "appstore" {
+  name                     = local.storage_name
+  resource_group_name      = azurerm_resource_group.app_grp.name
+  location                 = local.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+  tags = {
+    purpose     = "learning"
+    environment = "dev"
+  }
+
+  depends_on = [azurerm_resource_group.app_grp]
+}
+
+resource "azurerm_storage_container" "data" {
+  name                  = "data"
+  storage_account_id    = azurerm_storage_account.appstore.id
+  container_access_type = "blob"
+
+  depends_on = [azurerm_storage_account.appstore]
+}
+
+resource "azurerm_storage_blob" "IIS_Config" {
+  name                   = "IIS_Config.ps1"
+  source                 = "IIS_Config.ps1"
+  type                   = "Block"
+  storage_account_name   = azurerm_storage_account.appstore.name
+  storage_container_name = azurerm_storage_container.data.name
+
+  depends_on = [azurerm_storage_container.data]
+}
+
+resource "azurerm_virtual_machine_extension" "vm_extension" {
+  name                 = "appvm-extension"
+  virtual_machine_id   = azurerm_windows_virtual_machine.app_vm.id
+  publisher            = "Microsoft.Compute"
+  type                 = "CustomScriptExtension"
+  type_handler_version = "1.10"
+  settings             = <<SETTINGS
+    {
+        "fileUris": ["https://${azurerm_storage_account.appstore.name}.blob.core.windows.net/data/IIS_Config.ps1"],
+          "commandToExecute": "powershell -ExecutionPolicy Unrestricted -file IIS_Config.ps1"     
+    }
+SETTINGS
+
+  depends_on = [azurerm_storage_blob.IIS_Config]
+}
