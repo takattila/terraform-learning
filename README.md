@@ -54,7 +54,7 @@ terraform -chdir="projects/storage" plan -var-file="../../credentials.tfvars" -o
 terraform -chdir="projects/storage" apply -var-file="../../credentials.tfvars" -auto-approve "storage.tfplan"
 
 # Print output
-terraform -chdir="projects/storage" output -json
+terraform -chdir="projects/storage" output -raw sample_txt_url
 
 # Remove resources
 terraform -chdir="projects/storage" destroy -var-file="../../credentials.tfvars" -auto-approve
@@ -70,7 +70,7 @@ terraform -chdir="projects/vm-linux" plan -var-file="../../credentials.tfvars" -
 terraform -chdir="projects/vm-linux" apply -var-file="../../credentials.tfvars" -auto-approve "vm-linux.tfplan"
 
 # Print output
-terraform -chdir="projects/vm-linux" output -json
+terraform -chdir="projects/vm-linux" output -raw ssh_command
 
 # Remove resources
 terraform -chdir="projects/vm-linux" destroy -var-file="../../credentials.tfvars" -auto-approve
