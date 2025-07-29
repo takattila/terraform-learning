@@ -39,6 +39,9 @@ terraform -chdir="projects/keyvault" apply -var-file="../../credentials.tfvars" 
 
 # Remove resources
 terraform -chdir="projects/keyvault" destroy -var-file="../../credentials.tfvars" -auto-approve
+
+# Print output
+terraform -chdir="projects/keyvault" output -raw rdp_file > keyvault.rdp
 ```
 
 ### Storage Account
