@@ -59,8 +59,8 @@ resource "azurerm_network_interface" "app_interface" {
   ]
 }
 
-resource "azurerm_windows_virtual_machine" "app_vm" {
-  name                = "app-vm"
+resource "azurerm_windows_virtual_machine" "vm_win" {
+  name                = "vm-win"
   resource_group_name = local.rg_name
   location            = local.location
   size                = "Standard_D2s_v3"
@@ -105,7 +105,7 @@ resource "azurerm_network_security_group" "vm_nsg" {
     destination_address_prefix = "*"
   }
 
-  depends_on = [azurerm_windows_virtual_machine.app_vm]
+  depends_on = [azurerm_windows_virtual_machine.vm_win]
 }
 
 resource "azurerm_network_interface_security_group_association" "nic_nsg_assoc" {
