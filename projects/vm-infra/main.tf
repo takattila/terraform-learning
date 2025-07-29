@@ -21,6 +21,14 @@ resource "azurerm_virtual_network" "app_network" {
   }
 }
 
+resource "azurerm_public_ip" "app_pub_ip" {
+  name                = "app-pub-ip"
+  resource_group_name = local.rg_name
+  location            = local.location
+  allocation_method   = "Static"
+  depends_on          = [azurerm_resource_group.app_grp]
+}
+
 resource "azurerm_network_interface" "app_interface" {
   name                = "app-nic"
   location            = local.location
@@ -30,9 +38,13 @@ resource "azurerm_network_interface" "app_interface" {
     name                          = "internal"
     subnet_id                     = data.azurerm_subnet.SubnetA.id
     private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          = azurerm_public_ip.app_pub_ip.id
   }
 
-  depends_on = [azurerm_virtual_network.app_network]
+  depends_on = [
+    azurerm_virtual_network.app_network,
+    azurerm_public_ip.app_pub_ip
+  ]
 }
 
 resource "azurerm_windows_virtual_machine" "app_vm" {
@@ -59,4 +71,23 @@ resource "azurerm_windows_virtual_machine" "app_vm" {
   }
 
   depends_on = [azurerm_network_interface.app_interface]
+}
+
+resource "azurerm_network_security_group" "vm_nsg" {
+  name                = "vm-nsg"
+  location            = local.location
+  resource_group_name = local.rg_name
+
+  security_rule {
+    name                       = "Allow-RDP"
+    priority                   = 100
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "3389"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+  depends_on = [azurerm_windows_virtual_machine.app_vm]
 }
