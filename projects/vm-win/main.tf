@@ -84,6 +84,19 @@ resource "azurerm_managed_disk" "data_disk" {
   depends_on = [azurerm_windows_virtual_machine.app_vm]
 }
 
+resource "azurerm_virtual_machine_data_disk_attachment" "disk_attach" {
+  managed_disk_id    = azurerm_managed_disk.data_disk.id
+  virtual_machine_id = azurerm_windows_virtual_machine.app_vm.id
+  lun                = 0
+  caching            = "ReadWrite"
+
+  depends_on = [
+    azurerm_windows_virtual_machine.app_vm,
+    azurerm_managed_disk.data_disk
+  ]
+
+}
+
 resource "azurerm_network_security_group" "vm_nsg" {
   name                = "vm-nsg"
   location            = local.location
