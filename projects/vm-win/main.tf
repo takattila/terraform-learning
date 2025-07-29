@@ -47,6 +47,14 @@ resource "azurerm_network_interface" "app_interface" {
   ]
 }
 
+resource "azurerm_availability_set" "app_set" {
+  name                         = "app-set"
+  location                     = local.location
+  resource_group_name          = local.rg_name
+  platform_fault_domain_count  = 3
+  platform_update_domain_count = 3
+}
+
 resource "azurerm_windows_virtual_machine" "app_vm" {
   name                = "app-vm"
   resource_group_name = local.rg_name
@@ -54,6 +62,7 @@ resource "azurerm_windows_virtual_machine" "app_vm" {
   size                = "Standard_D2s_v3"
   admin_username      = "appuser"
   admin_password      = "pass@123"
+  availability_set_id = azurerm_availability_set.app_set.id
   network_interface_ids = [
     azurerm_network_interface.app_interface.id,
   ]
@@ -70,7 +79,10 @@ resource "azurerm_windows_virtual_machine" "app_vm" {
     version   = "latest"
   }
 
-  depends_on = [azurerm_network_interface.app_interface]
+  depends_on = [
+    azurerm_network_interface.app_interface,
+    azurerm_availability_set.app_set
+  ]
 }
 
 resource "azurerm_managed_disk" "data_disk" {
@@ -94,7 +106,6 @@ resource "azurerm_virtual_machine_data_disk_attachment" "disk_attach" {
     azurerm_windows_virtual_machine.app_vm,
     azurerm_managed_disk.data_disk
   ]
-
 }
 
 resource "azurerm_network_security_group" "vm_nsg" {
