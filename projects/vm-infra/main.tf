@@ -91,3 +91,9 @@ resource "azurerm_network_security_group" "vm_nsg" {
   }
   depends_on = [azurerm_windows_virtual_machine.app_vm]
 }
+
+resource "azurerm_network_interface_security_group_association" "nic_nsg_assoc" {
+  network_interface_id      = azurerm_network_interface.app_interface.id
+  network_security_group_id = azurerm_network_security_group.vm_nsg.id
+  depends_on                = [azurerm_network_security_group.vm_nsg]
+}
