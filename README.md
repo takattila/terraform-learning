@@ -96,6 +96,8 @@ terraform -chdir="projects/vm-win" destroy -var-file="../../credentials.tfvars" 
 
 ## App registrations
 
+Needed to authenticate terraform.
+
 On Azure Portal,
 - Go to your subscription and get the Subscription ID
 - Register app in "Microsoft Entra ID" (earlier called as "Azure Active Directory")
