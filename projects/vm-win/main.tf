@@ -67,8 +67,8 @@ resource "azurerm_availability_set" "app_set" {
   depends_on = [azurerm_resource_group.app_grp]
 }
 
-resource "azurerm_windows_virtual_machine" "app_vm" {
-  name                = "app-vm"
+resource "azurerm_windows_virtual_machine" "vm_win" {
+  name                = "vm-win"
   resource_group_name = local.rg_name
   location            = local.location
   size                = "Standard_D2s_v3"
@@ -105,17 +105,17 @@ resource "azurerm_managed_disk" "data_disk" {
   create_option        = "Empty"
   disk_size_gb         = 16
 
-  depends_on = [azurerm_windows_virtual_machine.app_vm]
+  depends_on = [azurerm_windows_virtual_machine.vm_win]
 }
 
 resource "azurerm_virtual_machine_data_disk_attachment" "disk_attach" {
   managed_disk_id    = azurerm_managed_disk.data_disk.id
-  virtual_machine_id = azurerm_windows_virtual_machine.app_vm.id
+  virtual_machine_id = azurerm_windows_virtual_machine.vm_win.id
   lun                = 0
   caching            = "ReadWrite"
 
   depends_on = [
-    azurerm_windows_virtual_machine.app_vm,
+    azurerm_windows_virtual_machine.vm_win,
     azurerm_managed_disk.data_disk
   ]
 }
@@ -137,7 +137,7 @@ resource "azurerm_network_security_group" "vm_nsg" {
     destination_address_prefix = "*"
   }
 
-  depends_on = [azurerm_windows_virtual_machine.app_vm]
+  depends_on = [azurerm_windows_virtual_machine.vm_win]
 }
 
 resource "azurerm_network_interface_security_group_association" "nic_nsg_assoc" {
@@ -181,7 +181,7 @@ resource "azurerm_storage_blob" "IIS_Config" {
 
 resource "azurerm_virtual_machine_extension" "vm_extension" {
   name                 = "appvm-extension"
-  virtual_machine_id   = azurerm_windows_virtual_machine.app_vm.id
+  virtual_machine_id   = azurerm_windows_virtual_machine.vm_win.id
   publisher            = "Microsoft.Compute"
   type                 = "CustomScriptExtension"
   type_handler_version = "1.10"
