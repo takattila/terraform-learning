@@ -54,6 +54,19 @@ terraform -chdir="projects/storage" apply -var-file="../../credentials.tfvars" -
 terraform -chdir="projects/storage" destroy -var-file="../../credentials.tfvars" -auto-approve
 ```
 
+### Linux VM
+
+```powershell
+# Check changes
+terraform -chdir="projects/vm-linux" plan -var-file="../../credentials.tfvars" -out="vm-linux.tfplan"
+
+# Deploy resources
+terraform -chdir="projects/vm-linux" apply -var-file="../../credentials.tfvars" -auto-approve "vm-linux.tfplan"
+
+# Remove resources
+terraform -chdir="projects/vm-linux" destroy -var-file="../../credentials.tfvars" -auto-approve
+```
+
 ### Windows VM
 
 ```powershell

@@ -35,3 +35,4 @@ terraform.rc
 
 # Credentials
 credentials.tfvars
+linuxkey.pem
