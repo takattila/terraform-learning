@@ -63,6 +63,9 @@ terraform -chdir="projects/vm-linux" plan -var-file="../../credentials.tfvars" -
 # Deploy resources
 terraform -chdir="projects/vm-linux" apply -var-file="../../credentials.tfvars" -auto-approve "vm-linux.tfplan"
 
+# SSH into Linux VM
+ssh -i "projects/vm-linux/linuxkey.pem" linuxuser@<LINUX_VM_PUBLIC_IP>
+
 # Remove resources
 terraform -chdir="projects/vm-linux" destroy -var-file="../../credentials.tfvars" -auto-approve
 ```
