@@ -73,6 +73,17 @@ resource "azurerm_windows_virtual_machine" "app_vm" {
   depends_on = [azurerm_network_interface.app_interface]
 }
 
+resource "azurerm_managed_disk" "data_disk" {
+  name                 = "data-disk"
+  location             = local.location
+  resource_group_name  = local.rg_name
+  storage_account_type = "Standard_LRS"
+  create_option        = "Empty"
+  disk_size_gb         = 16
+
+  depends_on = [azurerm_windows_virtual_machine.app_vm]
+}
+
 resource "azurerm_network_security_group" "vm_nsg" {
   name                = "vm-nsg"
   location            = local.location
@@ -89,11 +100,13 @@ resource "azurerm_network_security_group" "vm_nsg" {
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
+
   depends_on = [azurerm_windows_virtual_machine.app_vm]
 }
 
 resource "azurerm_network_interface_security_group_association" "nic_nsg_assoc" {
   network_interface_id      = azurerm_network_interface.app_interface.id
   network_security_group_id = azurerm_network_security_group.vm_nsg.id
-  depends_on                = [azurerm_network_security_group.vm_nsg]
+
+  depends_on = [azurerm_network_security_group.vm_nsg]
 }
