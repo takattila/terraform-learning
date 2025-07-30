@@ -7,6 +7,10 @@ This repository has been crated to study terraform by the help of [Azure Infrast
 - [Terraform Registry / Azure Provider](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs)
 - [Course GitHub page](https://github.com/cloudxeus/terraform-azure)
 
+# GitLab Deploy pipeline
+
+- https://gitlab.com/takattila/terraform-learning/-/pipelines/new
+
 # Usage
 
 ## Create a credentials.tfvars file in the root of the project
