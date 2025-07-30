@@ -17,3 +17,15 @@ output "vm_linux_ssh_command" {
 output "vm_win_rdp_file" {
   value = module.vm-win.vm_win_rdp_file
 }
+
+output "webapp_name" {
+  value = module.webapp.webapp_name
+}
+
+# output "webapp_repo_url" {
+#   value = module.webapp.webapp_repo_url
+# }
+
+output "webapp_url" {
+  value = module.webapp.webapp_url
+}

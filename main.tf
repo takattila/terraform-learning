@@ -17,3 +17,7 @@ module "vm-linux" {
 module "vm-win" {
   source = "./modules/vm-win"
 }
+
+module "webapp" {
+  source = "./modules/webapp"
+}

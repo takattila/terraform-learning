@@ -116,6 +116,24 @@ explorer vm-win.rdp
 terraform destroy -var-file="credentials.tfvars" -target="module.vm-win" -auto-approve
 ```
 
+### WebApp
+
+```powershell
+# Check changes
+terraform plan -var-file="credentials.tfvars" -target="module.webapp" -out="webapp.tfplan"
+
+# Deploy resources
+terraform apply -var-file="credentials.tfvars" -auto-approve "webapp.tfplan"
+
+# Print output
+terraform output -raw webapp_name
+# terraform output -raw webapp_repo_url
+terraform output -raw webapp_url
+
+# Remove resources
+terraform destroy -var-file="credentials.tfvars" -target="module.webapp" -auto-approve
+```
+
 # HOWTOs
 
 ## App registrations
