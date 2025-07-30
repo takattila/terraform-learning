@@ -5,15 +5,3 @@ locals {
   location     = "West Europe"
   storage_name = "tformstore${local.short_ts}"
 }
-
-data "azurerm_client_config" "current" {}
-
-data "template_cloudinit_config" "linuxconfig" {
-  gzip          = true
-  base64_encode = true
-
-  part {
-    content_type = "text/cloud-config"
-    content      = "packages: ['nginx']"
-  }
-}

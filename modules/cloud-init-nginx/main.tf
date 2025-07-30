@@ -76,6 +76,7 @@ resource "azurerm_linux_virtual_machine" "vm_linux" {
   location            = local.location
   size                = "Standard_D2s_v3"
   admin_username      = "linuxuser"
+  custom_data         = data.template_cloudinit_config.linuxconfig.rendered
   network_interface_ids = [
     azurerm_network_interface.app_nic.id,
   ]
@@ -117,6 +118,18 @@ resource "azurerm_network_security_group" "vm_nsg" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "22"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
+    name                       = "Allow-HTTP"
+    priority                   = 101
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "80"
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }

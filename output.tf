@@ -1,15 +1,19 @@
-output "keyvault_rdp_file" {
-  value = module.keyvault.keyvault_rdp_file
+output "cloud_init_nginx_ssh_command" {
+  value = module.cloud-init-nginx.cloud_init_nginx_ssh_command
 }
 
-output "sample_txt_url" {
-  value = module.storage.sample_txt_url
+output "cloud_init_nginx_public_ip" {
+  value = module.cloud-init-nginx.cloud_init_nginx_public_ip
 }
 
-output "ssh_command" {
-  value = module.vm_linux.ssh_command
+output "storage_sample_txt_url" {
+  value = module.storage.storage_sample_txt_url
+}
+
+output "vm_linux_ssh_command" {
+  value = module.vm-linux.vm_linux_ssh_command
 }
 
 output "vm_win_rdp_file" {
-  value = module.vm_win.vm_win_rdp_file
+  value = module.vm-win.vm_win_rdp_file
 }

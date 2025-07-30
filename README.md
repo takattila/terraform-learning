@@ -29,6 +29,23 @@ tenant_id       = "<AZURE_ENTRA_APP_TENANT_ID"  # Select your registered app's D
 terraform init
 ```
 
+### Nginx deployed by Cloud Init
+
+```powershell
+# Check changes
+terraform plan -var-file="credentials.tfvars" -target="module.cloud-init-nginx" -out="cloud-init-nginx.tfplan"
+
+# Deploy resources
+terraform apply -var-file="credentials.tfvars" -auto-approve "cloud-init-nginx.tfplan"
+
+# Print output
+terraform output -raw cloud_init_nginx_ssh_command
+terraform output -raw cloud_init_nginx_public_ip
+
+# Remove resources
+terraform destroy -var-file="credentials.tfvars" -target="module.cloud-init-nginx" -auto-approve
+```
+
 ### Key Vault
 
 ```powershell
@@ -58,7 +75,7 @@ terraform plan -var-file="credentials.tfvars" -target="module.storage" -out="sto
 terraform apply -var-file="credentials.tfvars" -auto-approve "storage.tfplan"
 
 # Print output
-terraform output -raw sample_txt_url
+terraform output -raw storage_sample_txt_url
 
 # Remove resources
 terraform destroy -var-file="credentials.tfvars" -target="module.storage" -auto-approve
@@ -68,23 +85,23 @@ terraform destroy -var-file="credentials.tfvars" -target="module.storage" -auto-
 
 ```powershell
 # Check changes
-terraform plan -var-file="credentials.tfvars" -target="module.vm_linux" -out="vm-linux.tfplan"
+terraform plan -var-file="credentials.tfvars" -target="module.vm-linux" -out="vm-linux.tfplan"
 
 # Deploy resources
 terraform apply -var-file="credentials.tfvars" -auto-approve "vm-linux.tfplan"
 
 # Print output
-terraform output -raw ssh_command
+terraform output -raw vm_linux_ssh_command
 
 # Remove resources
-terraform destroy -var-file="credentials.tfvars" -target="module.vm_linux" -auto-approve
+terraform destroy -var-file="credentials.tfvars" -target="module.vm-linux" -auto-approve
 ```
 
 ### Windows VM
 
 ```powershell
 # Check changes
-terraform plan -var-file="credentials.tfvars" -target="module.vm_win" -out="vm-win.tfplan"
+terraform plan -var-file="credentials.tfvars" -target="module.vm-win" -out="vm-win.tfplan"
 
 # Deploy resources
 terraform apply -var-file="credentials.tfvars" -auto-approve "vm-win.tfplan"
@@ -96,7 +113,7 @@ terraform output -raw vm_win_rdp_file > vm-win.rdp
 explorer vm-win.rdp
 
 # Remove resources
-terraform destroy -var-file="credentials.tfvars" -target="module.vm_win" -auto-approve
+terraform destroy -var-file="credentials.tfvars" -target="module.vm-win" -auto-approve
 ```
 
 # HOWTOs

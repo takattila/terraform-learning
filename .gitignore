@@ -24,6 +24,7 @@ crash.log
 crash.*.log
 
 # Plan files (terraform plan -out=XXX.tfplan)
+.tfplan
 *.tfplan
 
 # CLI configuration files
