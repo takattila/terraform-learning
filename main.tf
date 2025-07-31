@@ -21,3 +21,7 @@ module "vm-win" {
 module "webapp" {
   source = "./modules/webapp"
 }
+
+module "monitor" {
+  source = "./modules/monitor"
+}

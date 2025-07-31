@@ -69,6 +69,23 @@ explorer keyvault.rdp
 terraform destroy -var-file="credentials.tfvars" -target="module.keyvault" -auto-approve
 ```
 
+### Monitor
+
+```powershell
+# Check changes
+terraform plan -var-file="credentials.tfvars" -target="module.monitor" -out="monitor.tfplan"
+
+# Deploy resources
+terraform apply -var-file="credentials.tfvars" -auto-approve "monitor.tfplan"
+
+# Print output
+terraform output -raw monitor_service_urls
+terraform output -raw monitor_ssh_command
+
+# Remove resources
+terraform destroy -var-file="credentials.tfvars" -target="module.monitor" -auto-approve
+```
+
 ### Storage Account
 
 ```powershell
