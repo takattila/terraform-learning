@@ -195,7 +195,6 @@ function installServices {
     echo "  - monitor-web: $(sudo systemctl is-enabled monitor-web.service)"
     
     echo "- [10./${totalSteps}.] Modifying configuration..."
-    sudo sed -i 's|CADDY_DOMAIN|http://'"$DOMAIN_NAME"':80|g' /etc/caddy/Caddyfile
     cp /tmp/web.linux.yaml "${CONFIG_PATH}" >/dev/null 2>&1 || true
     cp /tmp/api.linux.yaml "${CONFIG_PATH}" >/dev/null 2>&1 || true
     

@@ -205,32 +205,36 @@ resource "null_resource" "configure_monitor" {
 
   provisioner "remote-exec" {
     inline = [
-      # Update packages
+      "echo === Update packages ===",
       "sudo apt update",
 
-      # Set Caddy for installation
+      "echo === Set Caddy for installation ===",
       "sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https curl",
       "curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor --yes -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg",
       "curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list",
       "sudo chmod o+r /usr/share/keyrings/caddy-stable-archive-keyring.gpg",
       "sudo chmod o+r /etc/apt/sources.list.d/caddy-stable.list",
 
-      # Move Caddyfile to the correct location
-      "sudo mv /tmp/Caddyfile /etc/caddy/Caddyfile",
-      "sudo chown root:root /etc/caddy/Caddyfile",
-
-      # Install Caddy
+      "echo === Install Caddy ===",
+      "sudo apt update",
       "sudo apt install -y caddy unzip",
 
-      # Make the script executable
+      "echo === Make the script executable ===",
       "chmod +x /tmp/install.sh",
 
-      # Run the script
+      "echo === Run the script ===",
       "/bin/bash /tmp/install.sh /opt/monitor/configs ${azurerm_public_ip.public_ip.domain_name_label}.${azurerm_resource_group.app_grp.location}.cloudapp.azure.com",
 
-      # Start and enable Caddy service
+      "echo === Copy Caddyfile to the correct location ===",
+      "sudo cp /tmp/Caddyfile /etc/caddy/Caddyfile",
+      "sudo chown root:root /etc/caddy/Caddyfile",
+
+      "echo === Replace CADDY_DOMAIN in Caddyfile with the actual domain name ===",
+      "sudo sed -i 's|CADDY_DOMAIN|http://${azurerm_public_ip.public_ip.domain_name_label}.${azurerm_resource_group.app_grp.location}.cloudapp.azure.com:80|g' /etc/caddy/Caddyfile",
+
+      "echo === Start and enable Caddy service ===",
       "sudo systemctl enable caddy",
-      "sudo systemctl start caddy",
+      "sudo systemctl restart caddy"
     ]
   }
 }
