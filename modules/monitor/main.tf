@@ -190,8 +190,15 @@ resource "null_resource" "configure_monitor" {
 
   provisioner "remote-exec" {
     inline = [
+      # Install unzip
+      "sudo apt-get update",
+      "sudo apt-get install -y unzip",
+
+      # Make the script executable
       "chmod +x /tmp/install.sh",
-      "/tmp/install.sh /opt/monitor/configs/web.linux.yaml ${azurerm_public_ip.public_ip.domain_name_label}.eastus.cloudapp.azure.com"
+
+      # Run the script
+      "/bin/bash /tmp/install.sh /opt/monitor/configs/web.linux.yaml ${azurerm_public_ip.public_ip.domain_name_label}.eastus.cloudapp.azure.com"
     ]
   }
 }
