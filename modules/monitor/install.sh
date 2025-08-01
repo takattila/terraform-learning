@@ -130,27 +130,13 @@ function checkAllProgramsInstalled {
     fi
 }
 
-function modify_config_file() {
-    echo "Modifying configuration: port 443, domain name, routes"
-    
-    sudo sed -i 's|CADDY_DOMAIN|http://'"$DOMAIN_NAME"':80|g' /etc/caddy/Caddyfile
-    
-    cp /tmp/web.linux.yaml "${CONFIG_PATH}" >/dev/null 2>&1 || true
-    cp /tmp/api.linux.yaml "${CONFIG_PATH}" >/dev/null 2>&1 || true
-}
-
-function restart_monitor_service() {
-    echo "Restarting monitor-web.service"
-    sudo systemctl restart monitor-web.service
-}
-
 function installServices {
     local url="$1"
     local basePath="/opt/"
     local programDir="monitor"
     local monitorPath="${basePath}${programDir}"
     local cfgBackupPath="${monitorPath}-cfg-backup"
-    local totalSteps="11"
+    local totalSteps="12"
     local backupCfg="y"  # DEFAULT: mindig backup készül unattended módban
     
     echo "- [1./${totalSteps}.] Downloading..."
@@ -208,19 +194,22 @@ function installServices {
     echo "  - monitor-api: $(sudo systemctl is-enabled monitor-api.service)"
     echo "  - monitor-web: $(sudo systemctl is-enabled monitor-web.service)"
     
-    echo "- [10./${totalSteps}.] Starting services..."
+    echo "- [10./${totalSteps}.] Modifying configuration..."
+    sudo sed -i 's|CADDY_DOMAIN|http://'"$DOMAIN_NAME"':80|g' /etc/caddy/Caddyfile
+    cp /tmp/web.linux.yaml "${CONFIG_PATH}" >/dev/null 2>&1 || true
+    cp /tmp/api.linux.yaml "${CONFIG_PATH}" >/dev/null 2>&1 || true
+    
+    echo "- [11./${totalSteps}.] Starting services..."
     sudo systemctl stop monitor-api.service monitor-web.service || true
     sudo systemctl start monitor-api.service monitor-web.service
     echo "  - monitor-api: $(sudo systemctl is-active monitor-api.service)"
     echo "  - monitor-web: $(sudo systemctl is-active monitor-web.service)"
     
-    echo "- [11./${totalSteps}.] Finished!"
+    echo "- [12./${totalSteps}.] Finished!"
     echo "  - $(cat /opt/monitor/VERSION.md | sed ':a;N;$!ba;s/\n/ /g')"
     echo "  - Web interface: http://$(getIP):$(getPort "${monitorPath}")$(getRoute "${monitorPath}")"
     
-    modify_config_file
-    restart_monitor_service
-    echo "Configuration completed, the service is now running on port 443."
+    echo "Configuration completed, the service is now running on port $(getPort)."
 }
 
 function clearScreen {
