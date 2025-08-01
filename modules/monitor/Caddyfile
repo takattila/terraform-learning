@@ -1,0 +1,8 @@
+CADDY_DOMAIN {
+    # tls takattila@gmail.com 
+    route /* {
+        reverse_proxy http://127.0.0.1:8383 {
+            header_up X-Real-IP {remote}
+        }
+    }
+}

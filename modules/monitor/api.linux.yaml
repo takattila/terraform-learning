@@ -1,0 +1,106 @@
+on_start:
+  port: 7070
+  routes:
+    all: /all
+    playground: /play
+    model: /model
+    cpu: /cpu
+    memory: /memory
+    processes: /processes
+    storages: /storages
+    services: /services
+    network: /network
+    toggle: /toggle/{section}/{status}
+    run:
+      list: /run/list
+      exec: /run/exec/{name}
+      stdout: /run/stdout/{name}
+    skins: /skins
+    logos: /logos
+  logger:
+    level: debug
+    color: on
+on_runtime:
+  # physical_memory: 1GB
+  commands:
+    # cpu_temp:
+    #   - bash
+    #   - -c
+    #   - |
+    #     cat /sys/class/thermal/thermal_zone*/temp \
+    #     | column -s $'\t' -t \
+    #     | sed 's/\(.\)..$/.\1/'
+    model_name:
+      - bash
+      - -c
+      - |
+        hostnamectl \
+          | grep Operating \
+          | awk -F: '{print $2}' \
+          | xargs
+    processes:
+      - bash
+      - -c
+      - |
+        ps -ewwo pid,user,%mem,%cpu,cmd \
+          --sort=-%cpu --no-headers \
+          | head -n 10 \
+          | tail -n 10
+    service_is_active:
+      - bash
+      - -c
+      - systemctl is-active {service} || true
+    service_is_enabled:
+      - bash
+      - -c
+      - systemctl is-enabled {service} || true
+    storage:
+      - bash
+      - -c
+      - |
+        df -B1 \
+          | grep -v tmpfs \
+          | grep -v none \
+          | grep -v snap \
+          | awk '(NR>1)' \
+          | sort -k 6
+  services_list:
+    - monitor-api
+    - monitor-web
+    - smbd
+    - sshd
+    - syslog
+  run:
+    ping_10_localhost:
+      - ping -c 10 localhost
+    ping_50_localhost:
+      - ping -c 50 localhost
+    find_pi:
+      - |
+        dash -c 'find /home/pi /usr -name pi'
+    get_storages:
+      - |
+        df -B1 \
+          | grep -v tmpfs \
+          | grep -v none \
+          | grep -v snap \
+          | awk '(NR>1)' \
+          | sort -k 6
+    list_media:
+      - |
+        for f in $(ls -d /media/*); do
+          echo "- Content of $f:";
+          echo "$(for d in $(ls -d $f/* 2>/dev/null); do echo "  - $d"; done)";
+        done
+    processes:
+      - dash
+      - -c
+      - |
+        "
+          ps -ewwo pid,user,%mem,%cpu,cmd \
+            --sort=-%cpu --no-headers \
+            | head -n 10 \
+            | tail -n 10
+        "
+    services:
+      - systemctl list-units --type=service

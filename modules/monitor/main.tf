@@ -62,13 +62,13 @@ resource "azurerm_network_security_group" "nsg" {
   }
 
   security_rule {
-    name                       = "Allow-443"
+    name                       = "Allow-80"
     priority                   = 1001
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
-    destination_port_range     = "443"
+    destination_port_range     = "80"
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
@@ -93,18 +93,6 @@ resource "azurerm_network_security_group" "nsg" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "8383"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
-
-  security_rule {
-    name                       = "Allow-80"
-    priority                   = 1004
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "80"
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
@@ -175,6 +163,10 @@ resource "azurerm_linux_virtual_machine" "vm" {
 resource "null_resource" "configure_monitor" {
   depends_on = [azurerm_linux_virtual_machine.vm]
 
+  triggers = {
+    always_run = timestamp()
+  }
+
   connection {
     type        = "ssh"
     host        = azurerm_public_ip.public_ip.ip_address
@@ -184,22 +176,53 @@ resource "null_resource" "configure_monitor" {
   }
 
   provisioner "file" {
+    source      = "modules/monitor/Caddyfile"
+    destination = "/tmp/Caddyfile"
+  }
+
+  provisioner "file" {
     source      = "modules/monitor/install.sh"
     destination = "/tmp/install.sh"
   }
 
+  provisioner "file" {
+    source      = "modules/monitor/api.linux.yaml"
+    destination = "/tmp/api.linux.yaml"
+  }
+
+  provisioner "file" {
+    source      = "modules/monitor/web.linux.yaml"
+    destination = "/tmp/web.linux.yaml"
+  }
+
   provisioner "remote-exec" {
     inline = [
-      # Install unzip
-      "sudo apt-get update",
-      "sudo apt-get install -y unzip",
+      # Update packages
+      "sudo apt update",
+
+      # Set Caddy for installation
+      "sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https curl",
+      "curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor --yes -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg",
+      "curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list",
+      "chmod o+r /usr/share/keyrings/caddy-stable-archive-keyring.gpg",
+      "chmod o+r /etc/apt/sources.list.d/caddy-stable.list",
+
+      # Move Caddyfile to the correct location
+      "sudo mv /tmp/Caddyfile /etc/caddy/Caddyfile",
+      "sudo chown root:root /etc/caddy/Caddyfile",
+
+      # Install Caddy
+      "sudo apt install -y caddy unzip",
 
       # Make the script executable
       "chmod +x /tmp/install.sh",
 
       # Run the script
-      "/bin/bash /tmp/install.sh /opt/monitor/configs/web.linux.yaml ${azurerm_public_ip.public_ip.domain_name_label}.eastus.cloudapp.azure.com"
+      "/bin/bash /tmp/install.sh /opt/monitor/configs ${azurerm_public_ip.public_ip.domain_name_label}.${azurerm_resource_group.rg.location}.cloudapp.azure.com",
+
+      # Start and enable Caddy service
+      "sudo systemctl enable caddy",
+      "sudo systemctl start caddy",
     ]
   }
 }
-
