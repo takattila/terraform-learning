@@ -2,7 +2,7 @@ output "monitor_service_urls" {
   description = "Monitor service URLs by IP and DNS"
   value = [
     "http://${azurerm_public_ip.public_ip.ip_address}/",
-    "http://${azurerm_public_ip.public_ip.domain_name_label}.${azurerm_resource_group.rg.location}.cloudapp.azure.com/"
+    "http://${azurerm_public_ip.public_ip.domain_name_label}.${azurerm_resource_group.app_grp.location}.cloudapp.azure.com/"
   ]
 }
 

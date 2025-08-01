@@ -27,6 +27,14 @@ tenant_id       = "<AZURE_ENTRA_APP_TENANT_ID"  # Select your registered app's D
 
 ## Terraform commands
 
+### Take control on existing infrastructure
+
+Terraform import maps existing infrastructure (like a resource in Azure, AWS, etc.) to a resource block in your Terraform configuration, so Terraform can manage it going forward. It doesn’t create anything — it just links what's already there to your code.
+
+```powershell
+terraform import -var-file="credentials.tfvars" -input=false module.${MODULE}}$.azurerm_resource_group.app_grp "/subscriptions/${ARM_SUBSCRIPTION_ID}/resourceGroups/rg-${MODULE}}"
+```
+
 ### Initialize project
 
 ```powershell

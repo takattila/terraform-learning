@@ -207,7 +207,7 @@ function installServices {
     
     echo "- [12./${totalSteps}.] Finished!"
     echo "  - $(cat /opt/monitor/VERSION.md | sed ':a;N;$!ba;s/\n/ /g')"
-    echo "  - Web interface: http://$(getIP):$(getPort "${monitorPath}")$(getRoute "${monitorPath}")"
+    echo "  - Web interface: http://${DOMAIN_NAME}$(getRoute "${monitorPath}")"
     
     echo "Configuration completed, the service is now running on port $(getPort)."
 }

@@ -10,23 +10,31 @@ resource "local_file" "linuxkey" {
   depends_on = [tls_private_key.linux_key]
 }
 
-resource "azurerm_resource_group" "rg" {
+resource "azurerm_resource_group" "app_grp" {
   name     = local.rg_name
   location = local.location
+}
+
+resource "azurerm_network_watcher" "watcher" {
+  name                = "app-network-watcher"
+  location            = local.location
+  resource_group_name = local.rg_name
+
+  depends_on = [azurerm_resource_group.app_grp]
 }
 
 resource "azurerm_virtual_network" "vnet" {
   name                = "monitor-vnet"
   address_space       = ["10.0.0.0/16"]
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.app_grp.location
+  resource_group_name = azurerm_resource_group.app_grp.name
 
-  depends_on = [azurerm_resource_group.rg]
+  depends_on = [azurerm_resource_group.app_grp]
 }
 
 resource "azurerm_subnet" "subnet" {
   name                 = "monitor-subnet"
-  resource_group_name  = azurerm_resource_group.rg.name
+  resource_group_name  = azurerm_resource_group.app_grp.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.0.1.0/24"]
 
@@ -35,19 +43,19 @@ resource "azurerm_subnet" "subnet" {
 
 resource "azurerm_public_ip" "public_ip" {
   name                = "monitor-public-ip"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.app_grp.location
+  resource_group_name = azurerm_resource_group.app_grp.name
   allocation_method   = "Static"
   sku                 = "Standard"
   domain_name_label   = "monitorservice"
 
-  depends_on = [azurerm_resource_group.rg]
+  depends_on = [azurerm_resource_group.app_grp]
 }
 
 resource "azurerm_network_security_group" "nsg" {
   name                = "monitor-nsg"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.app_grp.location
+  resource_group_name = azurerm_resource_group.app_grp.name
 
   security_rule {
     name                       = "Allow-SSH"
@@ -97,13 +105,13 @@ resource "azurerm_network_security_group" "nsg" {
     destination_address_prefix = "*"
   }
 
-  depends_on = [azurerm_resource_group.rg]
+  depends_on = [azurerm_resource_group.app_grp]
 }
 
 resource "azurerm_network_interface" "nic" {
   name                = "monitor-nic"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.app_grp.location
+  resource_group_name = azurerm_resource_group.app_grp.name
 
   ip_configuration {
     name                          = "internal"
@@ -130,8 +138,8 @@ resource "azurerm_network_interface_security_group_association" "nic_nsg_assoc" 
 
 resource "azurerm_linux_virtual_machine" "vm" {
   name                = "monitor-vm"
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.app_grp.name
+  location            = azurerm_resource_group.app_grp.location
   size                = "Standard_B1s"
   admin_username      = "monitoruser"
 
@@ -218,7 +226,7 @@ resource "null_resource" "configure_monitor" {
       "chmod +x /tmp/install.sh",
 
       # Run the script
-      "/bin/bash /tmp/install.sh /opt/monitor/configs ${azurerm_public_ip.public_ip.domain_name_label}.${azurerm_resource_group.rg.location}.cloudapp.azure.com",
+      "/bin/bash /tmp/install.sh /opt/monitor/configs ${azurerm_public_ip.public_ip.domain_name_label}.${azurerm_resource_group.app_grp.location}.cloudapp.azure.com",
 
       # Start and enable Caddy service
       "sudo systemctl enable caddy",
