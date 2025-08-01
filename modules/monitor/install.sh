@@ -136,8 +136,7 @@ function installServices {
     local programDir="monitor"
     local monitorPath="${basePath}${programDir}"
     local cfgBackupPath="${monitorPath}-cfg-backup"
-    local totalSteps="12"
-    local backupCfg="y"  # DEFAULT: mindig backup készül unattended módban
+    local totalSteps="11"
     
     echo "- [1./${totalSteps}.] Downloading..."
     sudo mkdir -p "${basePath}" >/dev/null 2>&1 || true
@@ -146,73 +145,52 @@ function installServices {
     echo "  - to: ${basePath}..."
     sudo rm -f monitor-v*.zip 2>&1 || true
     sudo wget -q --show-progress "$url"
-    
-    if [[ -e "${monitorPath}" ]]; then
-        echo "- [2./${totalSteps}.] Backup existing configuration..."
-        if [[ "$backupCfg" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-            echo "  - Creating backup..."
-            sudo mkdir -p ${cfgBackupPath} >/dev/null 2>&1 || true
-            sudo chown ${USER}:${USER} ${cfgBackupPath}
-            sudo chown -R ${USER}:${USER} ${cfgBackupPath}
-            sudo cp -f ${monitorPath}/configs/*.yaml ${cfgBackupPath} >/dev/null 2>&1 || true
-            sudo cp -f ${monitorPath}/configs/*.db ${cfgBackupPath} >/dev/null 2>&1 || true
-            sudo rm -rf ${monitorPath} >/dev/null 2>&1 || true
-        else
-            echo "  - Backup skipped..."
-        fi
-    else
-        echo "- [2./${totalSteps}.] There is no existing configuration, backup skipped..."
-    fi
-    
-    echo "- [3./${totalSteps}.] Unzip monitor-v*.zip to ${basePath}..."
+
+    echo "- [2./${totalSteps}.] Unzip monitor-v*.zip to ${basePath}..."
     sudo unzip -q -o monitor-v*.zip -d monitor
     sudo cp ${cfgBackupPath}/*.yaml ${monitorPath}/configs >/dev/null 2>&1 || true
     sudo cp ${cfgBackupPath}/*.db ${monitorPath}/configs >/dev/null 2>&1 || true
     sudo rm -rf ${cfgBackupPath} >/dev/null 2>&1 || true
     sudo rm -f monitor-v*.zip 2>&1 || true
     
-    echo "- [4./${totalSteps}.] Change ownership of the ${monitorPath} directory to $USER..."
+    echo "- [3./${totalSteps}.] Change ownership of the ${monitorPath} directory to $USER..."
     sudo chown ${USER}:${USER} ${monitorPath}
     sudo chown -R ${USER}:${USER} ${monitorPath}
     
-    echo "- [5./${totalSteps}.] Change directory to: ${monitorPath}"
+    echo "- [4./${totalSteps}.] Change directory to: ${monitorPath}"
     cd "${monitorPath}"
     
-    echo "- [6./${totalSteps}.] Save your credentials"
+    echo "- [5./${totalSteps}.] Save your credentials"
     echo "  - Using backup..."
     sudo echo "dXNlcjpwYXNz" > ${monitorPath}/configs/auth.db
     sudo chown root:root ${monitorPath}/configs/*.db >/dev/null 2>&1 || true
     
-    echo "- [7./${totalSteps}.] Copy ${programDir}/tools/*.service to /etc/systemd/system..."
+    echo "- [6./${totalSteps}.] Copy ${programDir}/tools/*.service to /etc/systemd/system..."
     sudo cp tools/*.service /etc/systemd/system
     
-    echo "- [8./${totalSteps}.] Reload daemon..."
+    echo "- [7./${totalSteps}.] Reload daemon..."
     sudo systemctl daemon-reload
     
-    echo "- [9./${totalSteps}.] Enabling services..."
+    echo "- [8./${totalSteps}.] Enabling services..."
     sudo systemctl enable monitor-api.service monitor-web.service
     echo "  - monitor-api: $(sudo systemctl is-enabled monitor-api.service)"
     echo "  - monitor-web: $(sudo systemctl is-enabled monitor-web.service)"
     
-    echo "- [10./${totalSteps}.] Modifying configuration..."
+    echo "- [9./${totalSteps}.] Modifying configuration..."
     cp /tmp/web.linux.yaml "${CONFIG_PATH}" >/dev/null 2>&1 || true
     cp /tmp/api.linux.yaml "${CONFIG_PATH}" >/dev/null 2>&1 || true
     
-    echo "- [11./${totalSteps}.] Starting services..."
+    echo "- [10./${totalSteps}.] Starting services..."
     sudo systemctl stop monitor-api.service monitor-web.service || true
     sudo systemctl start monitor-api.service monitor-web.service
     echo "  - monitor-api: $(sudo systemctl is-active monitor-api.service)"
     echo "  - monitor-web: $(sudo systemctl is-active monitor-web.service)"
     
-    echo "- [12./${totalSteps}.] Finished!"
+    echo "- [11./${totalSteps}.] Finished!"
     echo "  - $(cat /opt/monitor/VERSION.md | sed ':a;N;$!ba;s/\n/ /g')"
     echo "  - Web interface: http://${DOMAIN_NAME}$(getRoute "${monitorPath}")"
     
     echo "Configuration completed, the service is now running on port $(getPort)."
-}
-
-function clearScreen {
-    clear
 }
 
 function main {
@@ -220,7 +198,7 @@ function main {
     local version
     local url
     
-    clearScreen
+    clear
     checkOS
     checkAllProgramsInstalled
     

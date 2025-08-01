@@ -1,4 +1,14 @@
-http://:80 {
+http://monitorservice.westeurope.cloudapp.azure.com:80 {
+    @rootPath path /
+    redir @rootPath /monitor permanent
+
+    route /* {
+        reverse_proxy http://127.0.0.1:8383 {
+            header_up X-Real-IP {remote}
+        }
+    }
+}
+http://127.0.0.1:80 {
     @rootPath path /
     redir @rootPath /monitor permanent
 
