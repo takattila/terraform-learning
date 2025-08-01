@@ -79,7 +79,7 @@ terraform plan -var-file="credentials.tfvars" -target="module.monitor" -out="mon
 terraform apply -var-file="credentials.tfvars" -auto-approve "monitor.tfplan"
 
 # Print output
-terraform output -raw monitor_service_urls
+terraform output monitor_service_urls
 terraform output -raw monitor_ssh_command
 
 # Remove resources
