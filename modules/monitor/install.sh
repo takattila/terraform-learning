@@ -21,6 +21,8 @@ REQUIRED_PROGRAMS=(
 
 CONFIG_PATH="${1:-/opt/monitor/configs}"
 DOMAIN_NAME="${2}"
+VM_USER="${3:user}"
+VM_PASS="${4:pass}"
 
 function checkOS {
     if [[ "$OSTYPE" != "linux-gnu"* ]]; then
@@ -161,9 +163,11 @@ function installServices {
     cd "${monitorPath}"
     
     echo "- [5./${totalSteps}.] Save your credentials"
-    echo "  - Using backup..."
-    sudo echo "dXNlcjpwYXNz" > ${monitorPath}/configs/auth.db
-    sudo chown root:root ${monitorPath}/configs/*.db >/dev/null 2>&1 || true
+    echo -n "${VM_USER}:${VM_PASS}" \
+        | base64 \
+        | sudo tee ${monitorPath}/configs/auth.db > /dev/null \
+        && sudo chmod 600 ${monitorPath}/configs/auth.db \
+        && sudo chown root:root ${monitorPath}/configs/auth.db
     
     echo "- [6./${totalSteps}.] Copy ${programDir}/tools/*.service to /etc/systemd/system..."
     sudo cp tools/*.service /etc/systemd/system

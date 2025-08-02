@@ -141,12 +141,12 @@ resource "azurerm_linux_virtual_machine" "vm" {
   resource_group_name = azurerm_resource_group.app_grp.name
   location            = azurerm_resource_group.app_grp.location
   size                = "Standard_B1s"
-  admin_username      = "monitoruser"
+  admin_username      = local.username
 
   network_interface_ids = [azurerm_network_interface.nic.id]
 
   admin_ssh_key {
-    username   = "monitoruser"
+    username   = local.username
     public_key = tls_private_key.linux_key.public_key_openssh
   }
 
@@ -178,7 +178,7 @@ resource "null_resource" "configure_monitor" {
   connection {
     type        = "ssh"
     host        = azurerm_public_ip.public_ip.ip_address
-    user        = "monitoruser"
+    user        = local.username
     private_key = tls_private_key.linux_key.private_key_pem
     timeout     = "2m"
   }
@@ -223,7 +223,7 @@ resource "null_resource" "configure_monitor" {
       "chmod +x /tmp/install.sh",
 
       "echo === Run the script ===",
-      "/bin/bash /tmp/install.sh /opt/monitor/configs ${azurerm_public_ip.public_ip.domain_name_label}.${azurerm_resource_group.app_grp.location}.cloudapp.azure.com",
+      "/bin/bash /tmp/install.sh /opt/monitor/configs ${azurerm_public_ip.public_ip.domain_name_label}.${azurerm_resource_group.app_grp.location}.cloudapp.azure.com ${local.username} ${local.password}",
 
       "echo === Copy Caddyfile to the correct location ===",
       "sudo cp /tmp/Caddyfile /etc/caddy/Caddyfile",
