@@ -47,7 +47,7 @@ resource "azurerm_public_ip" "public_ip" {
   resource_group_name = azurerm_resource_group.app_grp.name
   allocation_method   = "Static"
   sku                 = "Standard"
-  domain_name_label   = "monitorservice"
+  domain_name_label   = local.domain_name_label
 
   depends_on = [azurerm_resource_group.app_grp]
 }
