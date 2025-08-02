@@ -236,7 +236,6 @@ on_runtime:
       - lshw
     lsipc:
       - lsipc
-
     lslogins:
       - lslogins
     lsmod:
