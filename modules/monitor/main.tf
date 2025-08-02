@@ -70,14 +70,14 @@ resource "azurerm_network_security_group" "nsg" {
   }
 
   security_rule {
-    name                       = "Allow-80"
+    name                       = "Allow-HTTP-HTTPS"
     priority                   = 1001
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
-    destination_port_range     = "80"
-    source_address_prefix      = "*"
+    destination_port_ranges    = ["80", "443"]
+    source_address_prefix      = "Internet"
     destination_address_prefix = "*"
   }
 
@@ -225,12 +225,10 @@ resource "null_resource" "configure_monitor" {
       "echo === Run the script ===",
       "/bin/bash /tmp/install.sh /opt/monitor/configs ${azurerm_public_ip.public_ip.domain_name_label}.${azurerm_resource_group.app_grp.location}.cloudapp.azure.com ${local.username} ${local.password}",
 
-      "echo === Copy Caddyfile to the correct location ===",
-      "sudo cp /tmp/Caddyfile /etc/caddy/Caddyfile",
-      "sudo chown root:root /etc/caddy/Caddyfile",
-
-      "echo === Replace CADDY_DOMAIN in Caddyfile with the actual domain name ===",
-      "sudo sed -i 's|CADDY_DOMAIN|http://${azurerm_public_ip.public_ip.domain_name_label}.${azurerm_resource_group.app_grp.location}.cloudapp.azure.com:80|g' /etc/caddy/Caddyfile",
+      "echo === Move Caddyfile to the correct location and configure it ===",
+      "sudo mv /tmp/Caddyfile /etc/caddy/Caddyfile",
+      "sudo sed -i 's|CADDY_DOMAIN|${azurerm_public_ip.public_ip.domain_name_label}.${azurerm_resource_group.app_grp.location}.cloudapp.azure.com|g' /etc/caddy/Caddyfile",
+      "sudo chown caddy:caddy /etc/caddy/Caddyfile",
 
       "echo === Start and enable Caddy service ===",
       "sudo systemctl enable caddy",

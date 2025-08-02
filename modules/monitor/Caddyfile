@@ -1,4 +1,4 @@
-http://monitorservice.westeurope.cloudapp.azure.com:80 {
+CADDY_DOMAIN {
     @rootPath path /
     redir @rootPath /monitor permanent
 
