@@ -73,7 +73,7 @@ on_runtime:
                 "cached": {"total": $total_val, "total_unit": "$total_unit", "actual": $cached_val, "actual_unit": "$cached_unit", "percent": $cached_pct},
                 "available": {"total": $total_val, "total_unit": "$total_unit", "actual": $available_val, "actual_unit": "$available_unit", "percent": $avail_pct},
                 "swap": {"total": $swap_total_val, "total_unit": "$swap_total_unit", "actual": $swap_used_val, "actual_unit": "$swap_used_unit", "percent": $swap_pct},
-                "io_wait": {"total": 100, "total_unit": "%%", "actual": $io_wait, "actual_unit": "%%", "percent": $io_wait}
+                "video": {"total": 100, "total_unit": "%%", "actual": $io_wait, "actual_unit": "%%", "percent": $io_wait}
             }
         }
         EOF
@@ -123,11 +123,68 @@ on_runtime:
           | awk '(NR>1)' \
           | sort -k 6
   services_list:
-    - monitor-api
-    - monitor-web
-    - smbd
-    - sshd
-    - syslog
+    - apparmor.service
+    - apport.service
+    - blk-availability.service
+    - caddy.service
+    - chrony.service
+    - cloud-config.service
+    - cloud-final.service
+    - cloud-init-local.service
+    - cloud-init.service
+    - console-setup.service
+    - cron.service
+    - dbus.service
+    - ephemeral-disk-warning.service
+    - finalrd.service
+    - getty@tty1.service
+    - hv-kvp-daemon.service
+    - keyboard-setup.service
+    - kmod-static-nodes.service
+    - lvm2-monitor.service
+    - monitor-api.service
+    - monitor-web.service
+    - multipathd.service
+    - networkd-dispatcher.service
+    - packagekit.service
+    - plymouth-quit-wait.service
+    - plymouth-quit.service
+    - plymouth-read-write.service
+    - polkit.service
+    - rsyslog.service
+    - serial-getty@ttyS0.service
+    - setvtrgb.service
+    - snapd.apparmor.service
+    - snapd.seeded.service
+    - snapd.service
+    - ssh.service
+    - sysstat.service
+    - systemd-binfmt.service
+    - systemd-fsck-root.service
+    - systemd-hostnamed.service
+    - systemd-journal-flush.service
+    - systemd-journald.service
+    - systemd-logind.service
+    - systemd-machine-id-commit.service
+    - systemd-modules-load.service
+    - systemd-networkd-wait-online.service
+    - systemd-networkd.service
+    - systemd-random-seed.service
+    - systemd-remount-fs.service
+    - systemd-resolved.service
+    - systemd-sysctl.service
+    - systemd-sysusers.service
+    - systemd-tmpfiles-setup-dev.service
+    - systemd-tmpfiles-setup.service
+    - systemd-udev-trigger.service
+    - systemd-udevd.service
+    - systemd-update-utmp.service
+    - systemd-user-sessions.service
+    - ufw.service
+    - unattended-upgrades.service
+    - user-runtime-dir@1000.service
+    - user@1000.service
+    - walinuxagent.service
   run:
     uname:
       - uname -a
