@@ -19,10 +19,8 @@ REQUIRED_PROGRAMS=(
     xargs
 )
 
-CONFIG_PATH="${1:-/opt/monitor/configs}"
-DOMAIN_NAME="${2}"
-VM_USER="${3:user}"
-VM_PASS="${4:pass}"
+VM_USER="${1:user}"
+VM_PASS="${2:pass}"
 
 function checkOS {
     if [[ "$OSTYPE" != "linux-gnu"* ]]; then
@@ -181,8 +179,8 @@ function installServices {
     echo "  - monitor-web: $(sudo systemctl is-enabled monitor-web.service)"
     
     echo "- [9./${totalSteps}.] Modifying configuration..."
-    cp /tmp/web.linux.yaml "${CONFIG_PATH}" >/dev/null 2>&1 || true
-    cp /tmp/api.linux.yaml "${CONFIG_PATH}" >/dev/null 2>&1 || true
+    cp /tmp/web.linux.yaml ${monitorPath}/configs >/dev/null 2>&1 || true
+    cp /tmp/api.linux.yaml ${monitorPath}/configs >/dev/null 2>&1 || true
     
     echo "- [10./${totalSteps}.] Starting services..."
     sudo systemctl stop monitor-api.service monitor-web.service || true
@@ -192,9 +190,6 @@ function installServices {
     
     echo "- [11./${totalSteps}.] Finished!"
     echo "  - $(cat /opt/monitor/VERSION.md | sed ':a;N;$!ba;s/\n/ /g')"
-    echo "  - Web interface: http://${DOMAIN_NAME}$(getRoute "${monitorPath}")"
-    
-    echo "Configuration completed, the service is now running on port $(getPort)."
 }
 
 function main {
@@ -215,16 +210,6 @@ function main {
     version="$(getVersion)"
     if [[ "$version" = "" ]]; then
         echo "${ERROR} Sorry, the latest release number cannot be fetched."
-        exit 1
-    fi
-    
-    if [[ "$CONFIG_PATH" = "" ]]; then
-        echo "${ERROR} Sorry, CONFIG_PATH is not set."
-        exit 1
-    fi
-    
-    if [[ "$DOMAIN_NAME" = "" ]]; then
-        echo "${ERROR} Sorry, DOMAIN_NAME is not set."
         exit 1
     fi
     

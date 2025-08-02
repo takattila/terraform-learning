@@ -5,6 +5,6 @@ locals {
   rg_name      = "rg-${basename(local.module_path)}"
   storage_name = "tformstore${local.short_ts}"
   location     = "West Europe"
-  username    = "monitoruser"
-  password    = "monitorpass"
+  username     = "monitoruser"
+  password     = "monitorpass"
 }

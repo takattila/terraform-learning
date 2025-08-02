@@ -184,55 +184,34 @@ resource "null_resource" "configure_monitor" {
   }
 
   provisioner "file" {
-    source      = "modules/monitor/Caddyfile"
+    source      = "modules/monitor/resources/Caddyfile"
     destination = "/tmp/Caddyfile"
   }
 
   provisioner "file" {
-    source      = "modules/monitor/install.sh"
-    destination = "/tmp/install.sh"
+    source      = "modules/monitor/resources/remote-exec.sh"
+    destination = "/tmp/remote-exec.sh"
   }
 
   provisioner "file" {
-    source      = "modules/monitor/api.linux.yaml"
+    source      = "modules/monitor/resources/monitor-setup.sh"
+    destination = "/tmp/monitor-setup.sh"
+  }
+
+  provisioner "file" {
+    source      = "modules/monitor/resources/api.linux.yaml"
     destination = "/tmp/api.linux.yaml"
   }
 
   provisioner "file" {
-    source      = "modules/monitor/web.linux.yaml"
+    source      = "modules/monitor/resources/web.linux.yaml"
     destination = "/tmp/web.linux.yaml"
   }
 
   provisioner "remote-exec" {
     inline = [
-      "echo === Update packages ===",
-      "sudo apt update",
-
-      "echo === Set Caddy for installation ===",
-      "sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https curl",
-      "curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor --yes -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg",
-      "curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list",
-      "sudo chmod o+r /usr/share/keyrings/caddy-stable-archive-keyring.gpg",
-      "sudo chmod o+r /etc/apt/sources.list.d/caddy-stable.list",
-
-      "echo === Install Caddy ===",
-      "sudo apt update",
-      "sudo apt install -y caddy unzip",
-
-      "echo === Make the script executable ===",
-      "chmod +x /tmp/install.sh",
-
-      "echo === Run the script ===",
-      "/bin/bash /tmp/install.sh /opt/monitor/configs ${azurerm_public_ip.public_ip.domain_name_label}.${azurerm_resource_group.app_grp.location}.cloudapp.azure.com ${local.username} ${local.password}",
-
-      "echo === Move Caddyfile to the correct location and configure it ===",
-      "sudo mv /tmp/Caddyfile /etc/caddy/Caddyfile",
-      "sudo sed -i 's|CADDY_DOMAIN|${azurerm_public_ip.public_ip.domain_name_label}.${azurerm_resource_group.app_grp.location}.cloudapp.azure.com|g' /etc/caddy/Caddyfile",
-      "sudo chown caddy:caddy /etc/caddy/Caddyfile",
-
-      "echo === Start and enable Caddy service ===",
-      "sudo systemctl enable caddy",
-      "sudo systemctl restart caddy"
+      "bash /tmp/remote-exec.sh \"${azurerm_public_ip.public_ip.domain_name_label}.${azurerm_resource_group.app_grp.location}.cloudapp.azure.com\"",
+      "bash /tmp/monitor-setup.sh \"${local.username}\" \"${local.password}\""
     ]
   }
 }
