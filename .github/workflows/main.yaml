@@ -35,6 +35,9 @@ jobs:
       - name: Terraform Init (root)
         run: terraform init
 
+      - name: Terraform validate (root)
+        run: terraform validate
+
       - name: Terraform Plan for all modules
         run: |
           for module in $(ls modules/* -d | xargs -n1 basename); do
