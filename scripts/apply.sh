@@ -1,62 +1,69 @@
 #!/bin/bash
 
-# --- Assign global variables from command-line arguments ---
+# This script automates applying a Terraform module by:
+# - Extracting Azure credentials from 'credentials.tfvars'
+# - Running 'terraform plan' for the specified module
+# - Running 'terraform apply' and capturing output
+# - On 'resource already exists' errors, importing existing resources and retrying apply
+# - Importing the Azure resource group once if needed
+# - Validating required inputs before running
+# - Looping until successful apply or unrecoverable error occurs
 
+# --- Global variables from command-line arguments ---
 # Only the Terraform module name is accepted as a parameter
 MODULE="$1"
 TFVARS_FILE="credentials.tfvars"
 TFPLAN_FILE="${MODULE}.tfplan"
 temp_output_file=$(mktemp)
 
-# --- Function to extract variables from the tfvars file ---
+# --- Helper function to extract variables from tfvars file ---
 function extract_tfvars() {
-    # Helper function to read a variable value from the tfvars file
     # Arguments: variable name
-    # Output: variable value or empty string
+    # Returns: value of the variable from the tfvars file, or empty string if not found
     grep -E "^$1\s*=" "$TFVARS_FILE" | sed -E "s/^$1\s*=\s*\"(.*)\"/\1/"
 }
 
-# --- Read Azure credential variables from credentials.tfvars ---
+# --- Function to extract Azure credentials and validate required inputs ---
+function validate_inputs() {
+    # Extract Azure credentials from the tfvars file
+    ARM_SUBSCRIPTION_ID=$(extract_tfvars subscription_id)
+    ARM_CLIENT_ID=$(extract_tfvars client_id)
+    ARM_CLIENT_SECRET=$(extract_tfvars client_secret)
+    ARM_TENANT_ID=$(extract_tfvars tenant_id)
 
-# Extract subscription_id, client_id, client_secret, tenant_id from tfvars file
-ARM_SUBSCRIPTION_ID=$(extract_tfvars subscription_id)
-ARM_CLIENT_ID=$(extract_tfvars client_id)
-ARM_CLIENT_SECRET=$(extract_tfvars client_secret)
-ARM_TENANT_ID=$(extract_tfvars tenant_id)
+    # Validate required arguments and files
+    if [ -z "${MODULE}" ]; then
+        echo "Error: Missing required argument MODULE."
+        echo "Usage: $0 <MODULE>"
+        exit 1
+    fi
 
-# --- Validate required inputs before proceeding ---
+    if [ ! -f "$TFVARS_FILE" ]; then
+        echo "Error: Terraform variables file '$TFVARS_FILE' not found."
+        exit 1
+    fi
 
-if [ -z "${MODULE}" ]; then
-    echo "Error: Missing required argument MODULE."
-    echo "Usage: $0 <MODULE>"
-    exit 1
-fi
+    if [ -z "${ARM_SUBSCRIPTION_ID}" ] || [ -z "${ARM_CLIENT_ID}" ] || [ -z "${ARM_CLIENT_SECRET}" ] || [ -z "${ARM_TENANT_ID}" ]; then
+        echo "Error: One or more required Azure credentials are missing in $TFVARS_FILE."
+        echo "Please ensure subscription_id, client_id, client_secret, and tenant_id are set."
+        exit 1
+    fi
+}
 
-if [ ! -f "$TFVARS_FILE" ]; then
-    echo "Error: Terraform variables file '$TFVARS_FILE' not found."
-    exit 1
-fi
-
-if [ -z "${ARM_SUBSCRIPTION_ID}" ] || [ -z "${ARM_CLIENT_ID}" ] || [ -z "${ARM_CLIENT_SECRET}" ] || [ -z "${ARM_TENANT_ID}" ]; then
-    echo "Error: One or more required Azure credentials are missing in $TFVARS_FILE."
-    echo "Please ensure subscription_id, client_id, client_secret, and tenant_id are set."
-    exit 1
-fi
-
-# --- Functions ---
-
+# --- Runs terraform plan command ---
 function run_terraform_plan() {
     echo "=== Running terraform plan ==="
     terraform plan -var-file="$TFVARS_FILE" -target="module.${MODULE}" -out="$TFPLAN_FILE"
 }
 
+# --- Runs terraform apply command and logs output ---
 function run_terraform_apply() {
     echo "=== Attempting to apply Terraform plan for module: ${MODULE} ==="
     terraform apply -var-file="$TFVARS_FILE" -auto-approve "$TFPLAN_FILE" 2>&1 | tee "$temp_output_file" || true
 }
 
+# --- Import resource group once if needed ---
 function import_resource_group_if_needed() {
-    # Import the resource group once per run, if needed
     if [ "$RG_IMPORTED" != "true" ]; then
         echo "=== Importing module.${MODULE}.azurerm_resource_group.app_grp ==="
         terraform import -var-file="$TFVARS_FILE" -input=false "module.${MODULE}.azurerm_resource_group.app_grp" "/subscriptions/${ARM_SUBSCRIPTION_ID}/resourceGroups/rg-${MODULE}" || true
@@ -66,10 +73,10 @@ function import_resource_group_if_needed() {
     fi
 }
 
+# --- Extract resources from error output and import them ---
 function extract_and_import() {
     echo "=== Terraform apply failed, attempting to import existing resources. ==="
 
-    # Parse error output for resource IDs and names, then import those resources into state
     grep -E 'Error:|with module' "$temp_output_file" | paste - - | while IFS=$'\t' read -r error_line with_line; do
         ID=$(echo "$error_line" | sed -n 's/.*ID "\(\/subscriptions[^"]*\)".*/\1/p')
         RESNAME=$(echo "$with_line" | sed -n 's/.*with \(module\.[^,]*\),.*/\1/p')
@@ -83,8 +90,9 @@ function extract_and_import() {
 }
 
 # --- Main execution loop ---
-
 function main() {
+    validate_inputs
+
     RG_IMPORTED="false"  # Flag to ensure resource group import only happens once
 
     while true; do
@@ -93,13 +101,13 @@ function main() {
 
         apply_output=$(cat "$temp_output_file")
 
-        # Check if apply succeeded by absence of "Error" keyword
+        # Check if apply succeeded by absence of "Error"
         if ! echo "$apply_output" | grep -q "Error"; then
             echo "=== Terraform apply completed successfully. ==="
             break
         fi
 
-        # If failure due to existing resources, import and retry
+        # If failure due to existing resources, attempt import and retry
         if echo "$apply_output" | grep -q "already exists"; then
             import_resource_group_if_needed
             extract_and_import
@@ -117,4 +125,4 @@ function main() {
 }
 
 # --- Start script ---
-main
+main "$@"
