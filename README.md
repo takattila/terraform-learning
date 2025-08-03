@@ -50,6 +50,9 @@ terraform plan -var-file="credentials.tfvars" -target="module.cloud-init-nginx" 
 # Deploy resources
 terraform apply -var-file="credentials.tfvars" -auto-approve "cloud-init-nginx.tfplan"
 
+# Alternatively you can use scripts/apply.sh
+bash scripts/apply.sh cloud-init-nginx
+
 # Print output
 terraform output -raw cloud_init_nginx_ssh_command
 terraform output -raw cloud_init_nginx_public_ip
@@ -66,6 +69,9 @@ terraform plan -var-file="credentials.tfvars" -target="module.keyvault" -out="ke
 
 # Deploy resources
 terraform apply -var-file="credentials.tfvars" -auto-approve "keyvault.tfplan"
+
+# Alternatively you can use scripts/apply.sh
+bash scripts/apply.sh keyvault
 
 # Print output
 terraform output -raw keyvault_rdp_file > keyvault.rdp
@@ -86,6 +92,9 @@ terraform plan -var-file="credentials.tfvars" -target="module.monitor" -out="mon
 # Deploy resources
 terraform apply -var-file="credentials.tfvars" -auto-approve "monitor.tfplan"
 
+# Alternatively you can use scripts/apply.sh
+bash scripts/apply.sh monitor
+
 # Print output
 terraform output monitor_service_urls
 terraform output -raw monitor_ssh_command
@@ -103,6 +112,9 @@ terraform plan -var-file="credentials.tfvars" -target="module.storage" -out="sto
 # Deploy resources
 terraform apply -var-file="credentials.tfvars" -auto-approve "storage.tfplan"
 
+# Alternatively you can use scripts/apply.sh
+bash scripts/apply.sh storage
+
 # Print output
 terraform output -raw storage_sample_txt_url
 
@@ -119,6 +131,9 @@ terraform plan -var-file="credentials.tfvars" -target="module.vm-linux" -out="vm
 # Deploy resources
 terraform apply -var-file="credentials.tfvars" -auto-approve "vm-linux.tfplan"
 
+# Alternatively you can use scripts/apply.sh
+bash scripts/apply.sh vm-linux
+
 # Print output
 terraform output -raw vm_linux_ssh_command
 
@@ -134,6 +149,9 @@ terraform plan -var-file="credentials.tfvars" -target="module.vm-win" -out="vm-w
 
 # Deploy resources
 terraform apply -var-file="credentials.tfvars" -auto-approve "vm-win.tfplan"
+
+# Alternatively you can use scripts/apply.sh
+bash scripts/apply.sh vm-win
 
 # Print output
 terraform output -raw vm_win_rdp_file > vm-win.rdp
@@ -153,6 +171,9 @@ terraform plan -var-file="credentials.tfvars" -target="module.webapp" -out="weba
 
 # Deploy resources
 terraform apply -var-file="credentials.tfvars" -auto-approve "webapp.tfplan"
+
+# Alternatively you can use scripts/apply.sh
+bash scripts/apply.sh webapp
 
 # Print output
 terraform output -raw webapp_name
