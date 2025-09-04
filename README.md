@@ -9,7 +9,7 @@ This repository has been crated to study terraform by the help of [Azure Infrast
 
 # GitLab Deploy pipeline
 
-- https://gitlab.com/takattila/terraform-learning/-/pipelines/new
+- https://gitlab.com/takattila/terraform-learning
 
 # Usage
 
