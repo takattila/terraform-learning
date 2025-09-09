@@ -261,3 +261,44 @@ To assign the Contributor role to the "terraform" application in Microsoft Entra
 5. Review and Assign:
    - In the "Review + assign" tab, review your settings.
    - Click Review + assign to apply the role.
+
+# Differences between ARM templates and Terraform
+
+## Comparison
+
+| Feature                   | ARM Templates                         | Terraform                                           |
+|---------------------------|---------------------------------------|-----------------------------------------------------|
+| Language                  | JSON                                  | HashiCorp Configuration Language (HCL)              |
+| Comments                  | Limited (metadata only)               | Supports inline comments (#)                        |
+| Syntax                    | Strict, less forgiving                | More forgiving, easier to read                      |
+| Parameters                | Parameters (passed values)            | Variables (passed values)                           |
+| Variables (internal)      | Variables in template                 | Local variables                                     |
+| Resource referencing      | `reference` function or concatenation | Resource addressing                                 |
+| Dependency management     | Must explicitly declare dependencies  | Automatically infers dependencies                   |
+| Reuse of templates        | Nested template references            | Modules                                             |
+| Functions for resources   | Functions for strings, numbers, dates | Easier referencing with HCL                         |
+| Flexibility and ease of use| More rigid, explicit configuration   | More flexible, simpler syntax, automatic management |
+
+## Differences
+
+- ARM templates use JSON language, while Terraform uses HashiCorp Configuration Language (HCL), which supports comments and is more human-readable and forgiving in syntax.
+- ARM templates have parameters (values passed into templates) and variables (values defined inside the template), whereas Terraform calls parameters variables and ARM's variables are called local variables in Terraform.
+- Both handle resources like virtual machines, networks, and storage but differ in syntax and ease of resource referencing; Terraform offers easier resource referencing due to HCL's user-friendly structure.
+- Dependency management differs significantly: ARM requires explicit dependency declarations (e.g., VM depends on NIC), while Terraform automatically infers dependencies with a dependency graph, simplifying configuration.
+- To reference resources in ARM, functions like reference or string concatenations are used; Terraform simplifies this with resource addressing and data sources for external information.
+- ARM templates use nested template references to reuse components; Terraform uses modules to achieve similar reuse but in a more modular and flexible way.
+- Overall, moving from ARM templates to Terraform requires learning new terminology and concepts but offers benefits like simpler syntax, automatic dependency handling, and more flexible infrastructure management.
+
+# When it is suitable to use ARM templates versus Terraform
+
+## ARM templates
+
+Are best used when working exclusively within the Azure ecosystem and needing native support for the latest Azure features immediately after release. They offer deep integration with Azure services, including built-in Role-Based Access Control (RBAC), detailed error messaging, and native support in the Azure Portal for managing deployments. ARM templates are ideal for scenarios where using Microsoft's native tools and direct Azure service integrations are priorities.
+
+## Terraform
+
+Is preferable when managing multi-cloud environments or hybrid setups, as it supports a wide range of cloud providers beyond Azure. It offers a simpler, modular, and more readable configuration language (HCL) and automatically handles dependencies, making infrastructure management easier for complex setups. Terraform supports state management enabling incremental changes, and benefits from a vibrant community providing numerous modules and providers, enhancing flexibility and portability.
+
+## In summary
+
+If the infrastructure is purely Azure-focused and deep native integration, visibility, and control are required, ARM templates are recommended. If flexibility, multi-cloud support, modularity, and ease of use in managing complex infrastructures are needed, Terraform is the better choice. Organizations sometimes use both, leveraging ARM templates for Azure-native features and Terraform for broader infrastructure provisioning.
