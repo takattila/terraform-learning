@@ -103,6 +103,27 @@ terraform output -raw monitor_ssh_command
 terraform destroy -var-file="credentials.tfvars" -target="module.monitor" -auto-approve
 ```
 
+### SQL
+
+```powershell
+# Check changes
+terraform plan -var-file="credentials.tfvars" -target="module.sql" -out="sql.tfplan"
+
+# Deploy resources
+terraform apply -var-file="credentials.tfvars" -auto-approve "sql.tfplan"
+
+# Alternatively you can use scripts/apply.sh
+bash scripts/apply.sh sql
+
+# Print output
+terraform output -raw sql_database_id
+terraform output -raw sql_database_url
+terraform output -raw sql_jdbc_connection_string
+
+# Remove resources
+terraform destroy -var-file="credentials.tfvars" -target="module.sql" -auto-approve
+```
+
 ### Storage Account
 
 ```powershell

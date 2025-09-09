@@ -6,6 +6,27 @@ output "cloud_init_nginx_public_ip" {
   value = module.cloud-init-nginx.cloud_init_nginx_public_ip
 }
 
+output "monitor_service_urls" {
+  value = module.monitor.monitor_service_urls
+}
+
+output "monitor_ssh_command" {
+  value = module.monitor.monitor_ssh_command
+}
+
+output "sql_database_id" {
+  value = module.sql.sql_database_id
+}
+
+output "sql_database_url" {
+  value = module.sql.sql_database_url
+}
+
+output "sql_jdbc_connection_string" {
+  value     = module.sql.sql_jdbc_connection_string
+  sensitive = true
+}
+
 output "storage_sample_txt_url" {
   value = module.storage.storage_sample_txt_url
 }
@@ -36,12 +57,4 @@ output "webapp_name" {
 
 output "webapp_url" {
   value = module.webapp.webapp_url
-}
-
-output "monitor_service_urls" {
-  value = module.monitor.monitor_service_urls
-}
-
-output "monitor_ssh_command" {
-  value = module.monitor.monitor_ssh_command
 }

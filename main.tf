@@ -6,6 +6,14 @@ module "keyvault" {
   source = "./modules/keyvault"
 }
 
+module "monitor" {
+  source = "./modules/monitor"
+}
+
+module "sql" {
+  source = "./modules/sql"
+}
+
 module "storage" {
   source = "./modules/storage"
 }
@@ -24,8 +32,4 @@ module "vnet" {
 
 module "webapp" {
   source = "./modules/webapp"
-}
-
-module "monitor" {
-  source = "./modules/monitor"
 }
