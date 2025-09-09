@@ -18,6 +18,14 @@ output "vm_win_rdp_file" {
   value = module.vm-win.vm_win_rdp_file
 }
 
+output "vnet_name" {
+  value = module.vnet.vnet_name
+}
+
+output "subnet_name" {
+  value = module.vnet.subnet_name
+}
+
 output "webapp_name" {
   value = module.webapp.webapp_name
 }

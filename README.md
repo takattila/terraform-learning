@@ -163,6 +163,26 @@ explorer vm-win.rdp
 terraform destroy -var-file="credentials.tfvars" -target="module.vm-win" -auto-approve
 ```
 
+### Vnet
+
+```powershell
+# Check changes
+terraform plan -var-file="credentials.tfvars" -target="module.vnet" -out="vnet.tfplan"
+
+# Deploy resources
+terraform apply -var-file="credentials.tfvars" -auto-approve "vnet.tfplan"
+
+# Alternatively you can use scripts/apply.sh
+bash scripts/apply.sh vnet
+
+# Print output
+terraform output -raw vnet_name
+terraform output -raw subnet_name
+
+# Remove resources
+terraform destroy -var-file="credentials.tfvars" -target="module.vnet" -auto-approve
+```
+
 ### WebApp
 
 ```powershell

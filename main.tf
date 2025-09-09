@@ -18,6 +18,10 @@ module "vm-win" {
   source = "./modules/vm-win"
 }
 
+module "vnet" {
+  source = "./modules/vnet"
+}
+
 module "webapp" {
   source = "./modules/webapp"
 }
