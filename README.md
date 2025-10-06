@@ -16,7 +16,7 @@ This repository has been crated to study terraform by the help of [Azure Infrast
 ## Create a credentials.tfvars file in the root of the project
 
 Content of the `credentials.tfvars` file:
-```
+```bash
 subscription_id = "<AZURE_SUBSCRIPTION_ID>"     # Your Azure Subscription ID
 client_id       = "<AZURE_ENTRA_APP_CLIENT_ID>" # Select your registered app's get its Client ID
 client_secret   = "<AZURE_ENTRA_APP_SECRET"     # Select your registered app's Client credentials
@@ -27,23 +27,46 @@ tenant_id       = "<AZURE_ENTRA_APP_TENANT_ID"  # Select your registered app's D
 
 ## Terraform commands
 
-### Take control on existing infrastructure
-
-Terraform import maps existing infrastructure (like a resource in Azure, AWS, etc.) to a resource block in your Terraform configuration, so Terraform can manage it going forward. It doesn’t create anything — it just links what's already there to your code.
-
-```powershell
-terraform import -var-file="credentials.tfvars" -input=false module.${MODULE}}$.azurerm_resource_group.app_grp "/subscriptions/${ARM_SUBSCRIPTION_ID}/resourceGroups/rg-${MODULE}}"
-```
-
 ### Initialize project
 
-```powershell
+```bash
 terraform init
+```
+
+### Create backend infrastructure
+
+Before you can use the modules, you need to create the backend infrastructure.
+<br>The backend infrastructure is managed by the `infra/backend` module.
+
+This process is automated by the `scripts/backend.sh` script.
+
+The script will:
+1. Create the backend infrastructure using the `infra/backend` module -> will create a storage account with a random name.
+2. Generate the `backend.tf` file in the root of the project with the correct `storage_account_name`.
+
+To run the script:
+```bash
+bash scripts/backend.sh
+```
+
+After running the script, you can initialize the main project:
+```bash
+terraform init
+```
+
+### Destroy backend infrastructure
+
+To destroy the backend infrastructure run the script with the `destroy` argument:
+
+```bash
+bash scripts/backend.sh destroy
 ```
 
 ### Nginx deployed by Cloud Init
 
-```powershell
+**Note:** Before deploying this module, make sure you have created the backend infrastructure as described above.
+
+```bash
 # Check changes
 terraform plan -var-file="credentials.tfvars" -target="module.cloud-init-nginx" -out="cloud-init-nginx.tfplan"
 
@@ -63,7 +86,9 @@ terraform destroy -var-file="credentials.tfvars" -target="module.cloud-init-ngin
 
 ### Key Vault
 
-```powershell
+**Note:** Before deploying this module, make sure you have created the backend infrastructure as described above.
+
+```bash
 # Check changes
 terraform plan -var-file="credentials.tfvars" -target="module.keyvault" -out="keyvault.tfplan"
 
@@ -85,7 +110,9 @@ terraform destroy -var-file="credentials.tfvars" -target="module.keyvault" -auto
 
 ### Monitor
 
-```powershell
+**Note:** Before deploying this module, make sure you have created the backend infrastructure as described above.
+
+```bash
 # Check changes
 terraform plan -var-file="credentials.tfvars" -target="module.monitor" -out="monitor.tfplan"
 
@@ -105,7 +132,9 @@ terraform destroy -var-file="credentials.tfvars" -target="module.monitor" -auto-
 
 ### SQL
 
-```powershell
+**Note:** Before deploying this module, make sure you have created the backend infrastructure as described above.
+
+```bash
 # Check changes
 terraform plan -var-file="credentials.tfvars" -target="module.sql" -out="sql.tfplan"
 
@@ -126,7 +155,9 @@ terraform destroy -var-file="credentials.tfvars" -target="module.sql" -auto-appr
 
 ### Storage Account
 
-```powershell
+**Note:** Before deploying this module, make sure you have created the backend infrastructure as described above.
+
+```bash
 # Check changes
 terraform plan -var-file="credentials.tfvars" -target="module.storage" -out="storage.tfplan"
 
@@ -145,7 +176,9 @@ terraform destroy -var-file="credentials.tfvars" -target="module.storage" -auto-
 
 ### Linux VM
 
-```powershell
+**Note:** Before deploying this module, make sure you have created the backend infrastructure as described above.
+
+```bash
 # Check changes
 terraform plan -var-file="credentials.tfvars" -target="module.vm-linux" -out="vm-linux.tfplan"
 
@@ -164,7 +197,9 @@ terraform destroy -var-file="credentials.tfvars" -target="module.vm-linux" -auto
 
 ### Windows VM
 
-```powershell
+**Note:** Before deploying this module, make sure you have created the backend infrastructure as described above.
+
+```bash
 # Check changes
 terraform plan -var-file="credentials.tfvars" -target="module.vm-win" -out="vm-win.tfplan"
 
@@ -186,7 +221,9 @@ terraform destroy -var-file="credentials.tfvars" -target="module.vm-win" -auto-a
 
 ### Vnet
 
-```powershell
+**Note:** Before deploying this module, make sure you have created the backend infrastructure as described above.
+
+```bash
 # Check changes
 terraform plan -var-file="credentials.tfvars" -target="module.vnet" -out="vnet.tfplan"
 
@@ -206,7 +243,9 @@ terraform destroy -var-file="credentials.tfvars" -target="module.vnet" -auto-app
 
 ### WebApp
 
-```powershell
+**Note:** Before deploying this module, make sure you have created the backend infrastructure as described above.
+
+```bash
 # Check changes
 terraform plan -var-file="credentials.tfvars" -target="module.webapp" -out="webapp.tfplan"
 
@@ -226,6 +265,14 @@ terraform destroy -var-file="credentials.tfvars" -target="module.webapp" -auto-a
 ```
 
 # HOWTOs
+
+## Take control on existing infrastructure
+
+Terraform import maps existing infrastructure (like a resource in Azure, AWS, etc.) to a resource block in your Terraform configuration, so Terraform can manage it going forward. It doesn’t create anything — it just links what's already there to your code.
+
+```bash
+terraform import -var-file="credentials.tfvars" -input=false module.${MODULE}}$.azurerm_resource_group.app_grp "/subscriptions/${ARM_SUBSCRIPTION_ID}/resourceGroups/rg-${MODULE}}"
+```
 
 ## App registrations
 

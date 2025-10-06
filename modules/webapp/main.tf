@@ -9,6 +9,10 @@ resource "azurerm_service_plan" "webapp_plan" {
   location            = azurerm_resource_group.app_grp.location
   os_type             = "Linux"
   sku_name            = "F1"
+
+  lifecycle {
+    ignore_changes = [name]
+  }
 }
 
 resource "azurerm_linux_web_app" "webapp" {
@@ -21,6 +25,10 @@ resource "azurerm_linux_web_app" "webapp" {
     application_stack {
       dotnet_version = "8.0"
     }
+  }
+
+  lifecycle {
+    ignore_changes = [name]
   }
 }
 

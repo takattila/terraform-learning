@@ -41,3 +41,6 @@ linuxkey.pem
 
 # Terraformer
 generated/
+
+# Ignore backend for tfstate in remote storage
+backend.tf

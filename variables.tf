@@ -18,3 +18,9 @@ variable "tenant_id" {
   type        = string
   description = "Azure Tenant ID"
 }
+
+variable "storage_account_name" {
+  type        = string
+  description = "The name of the storage account for the backend."
+  default     = "tfbackendstorage"
+}
