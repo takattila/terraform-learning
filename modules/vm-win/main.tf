@@ -159,6 +159,10 @@ resource "azurerm_storage_account" "appstore" {
   }
 
   depends_on = [azurerm_resource_group.app_grp]
+
+  lifecycle {
+    ignore_changes = [name]
+  }
 }
 
 resource "azurerm_storage_container" "data" {

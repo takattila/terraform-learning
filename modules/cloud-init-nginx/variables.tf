@@ -1,10 +1,9 @@
 locals {
-  raw_ts       = timestamp()
-  short_ts     = formatdate("YYMMDDhhmm", local.raw_ts)
-  module_path  = path.module
-  rg_name      = "rg-${basename(local.module_path)}"
-  location     = "West Europe"
-  storage_name = "tformstore${local.short_ts}"
+  raw_ts      = timestamp()
+  short_ts    = formatdate("YYMMDDhhmm", local.raw_ts)
+  module_path = path.module
+  rg_name     = "rg-${basename(local.module_path)}"
+  location    = "West Europe"
 }
 
 data "template_cloudinit_config" "linuxconfig" {

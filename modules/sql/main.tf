@@ -10,6 +10,10 @@ resource "azurerm_mssql_server" "appserver" {
   version                      = "12.0"
   administrator_login          = "sqladmin"
   administrator_login_password = "pass@123"
+
+  lifecycle {
+    ignore_changes = [name]
+  }
 }
 
 resource "azurerm_mssql_database" "appdb" {

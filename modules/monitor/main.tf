@@ -50,6 +50,10 @@ resource "azurerm_public_ip" "public_ip" {
   domain_name_label   = local.domain_name_label
 
   depends_on = [azurerm_resource_group.app_grp]
+
+  lifecycle {
+    ignore_changes = [domain_name_label]
+  }
 }
 
 resource "azurerm_network_security_group" "nsg" {

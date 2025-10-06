@@ -14,6 +14,10 @@ resource "azurerm_storage_account" "storage_account" {
     purpose     = "learning"
     environment = "dev"
   }
+
+  lifecycle {
+    ignore_changes = [name]
+  }
 }
 
 resource "azurerm_storage_container" "data" {

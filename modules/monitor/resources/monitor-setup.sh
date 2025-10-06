@@ -145,7 +145,7 @@ function installServices {
     echo "  - to: ${basePath}..."
     sudo rm -f monitor-v*.zip 2>&1 || true
     sudo wget -q --show-progress "$url"
-
+    
     echo "- [2./${totalSteps}.] Unzip monitor-v*.zip to ${basePath}..."
     sudo unzip -q -o monitor-v*.zip -d monitor
     sudo cp ${cfgBackupPath}/*.yaml ${monitorPath}/configs >/dev/null 2>&1 || true
@@ -162,10 +162,10 @@ function installServices {
     
     echo "- [5./${totalSteps}.] Save your credentials"
     echo -n "${VM_USER}:${VM_PASS}" \
-        | base64 \
-        | sudo tee ${monitorPath}/configs/auth.db > /dev/null \
-        && sudo chmod 600 ${monitorPath}/configs/auth.db \
-        && sudo chown root:root ${monitorPath}/configs/auth.db
+    | base64 \
+    | sudo tee ${monitorPath}/configs/auth.db > /dev/null \
+    && sudo chmod 600 ${monitorPath}/configs/auth.db \
+    && sudo chown root:root ${monitorPath}/configs/auth.db
     
     echo "- [6./${totalSteps}.] Copy ${programDir}/tools/*.service to /etc/systemd/system..."
     sudo cp tools/*.service /etc/systemd/system

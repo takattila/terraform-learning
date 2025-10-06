@@ -137,6 +137,9 @@ resource "azurerm_key_vault" "app_vault" {
   depends_on = [
     azurerm_resource_group.app_grp
   ]
+  lifecycle {
+    ignore_changes = [name]
+  }
 }
 
 resource "azurerm_key_vault_secret" "vmpassword" {
