@@ -1,11 +1,16 @@
+variable "env" {
+  type    = string
+  default = "dev"
+}
+
 locals {
   raw_ts            = timestamp()
   short_ts          = formatdate("YYMMDDhhmm", local.raw_ts)
   module_path       = path.module
-  rg_name           = "rg-${basename(local.module_path)}"
-  storage_name      = "tformstore${local.short_ts}"
+  rg_name           = "rg-${var.env}-${basename(local.module_path)}"
+  storage_name      = "sa${var.env}${local.short_ts}"
   location          = "West Europe"
   username          = "monitoruser"
   password          = "monitorpass"
-  domain_name_label = "monitorservice-${local.short_ts}"
+  domain_name_label = "monitorservice-${var.env}-${local.short_ts}"
 }

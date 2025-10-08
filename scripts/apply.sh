@@ -9,9 +9,14 @@
 # - Validating required inputs before running
 # - Looping until successful apply or unrecoverable error occurs
 
+# Usage example:
+# ./apply.sh <MODULE> <ENV>
+# Example: ./apply.sh app_module dev
+
 # --- Global variables from command-line arguments ---
-# Only the Terraform module name is accepted as a parameter
+# The Terraform module name and environment are accepted as parameters
 MODULE="$1"
+ENVIRONMENT="$2"
 TFVARS_FILE="credentials.tfvars"
 TFPLAN_FILE="${MODULE}.tfplan"
 temp_output_file=$(mktemp)
@@ -45,9 +50,15 @@ function validate_inputs() {
     ARM_TENANT_ID=$(extract_tfvars tenant_id)
     
     # Validate required arguments and files
-    if [ -z "${MODULE}" ]; then
-        echo "Error: Missing required argument MODULE."
-        echo "Usage: $0 <MODULE>"
+    if [ -z "${MODULE}" ] || [ -z "${ENVIRONMENT}" ]; then
+        echo "Error: Missing required arguments MODULE and ENV."
+        echo "Usage: $0 <MODULE> <ENV>"
+        echo "Example: $0 app_module dev"
+        exit 1
+    fi
+    
+    if [[ "$ENVIRONMENT" != "dev" && "$ENVIRONMENT" != "qa" && "$ENVIRONMENT" != "prod" ]]; then
+        echo "Error: ENV must be one of: dev, qa, prod"
         exit 1
     fi
     
@@ -66,20 +77,32 @@ function validate_inputs() {
 # --- Runs terraform plan command ---
 function run_terraform_plan() {
     echo "=== Running terraform plan ==="
-    terraform plan -var-file="$TFVARS_FILE" -target="module.${MODULE}" -out="$TFPLAN_FILE"
+    terraform plan \
+    -var-file="$TFVARS_FILE" \
+    -var="env=${ENVIRONMENT}" \
+    -target="module.${MODULE}" \
+    -out="$TFPLAN_FILE"
 }
 
 # --- Runs terraform apply command and logs output ---
 function run_terraform_apply() {
     echo "=== Attempting to apply Terraform plan for module: ${MODULE} ==="
-    terraform apply -var-file="$TFVARS_FILE" -auto-approve "$TFPLAN_FILE" 2>&1 | tee "$temp_output_file" || true
+    terraform apply \
+    -var-file="$TFVARS_FILE" \
+    -var="env=${ENVIRONMENT}" \
+    -auto-approve "$TFPLAN_FILE" 2>&1 | tee "$temp_output_file" || true
 }
 
 # --- Import resource group once if needed ---
 function import_resource_group_if_needed() {
     if [ "$RG_IMPORTED" != "true" ]; then
         echo "=== Importing module.${MODULE}.azurerm_resource_group.app_grp ==="
-        terraform import -var-file="$TFVARS_FILE" -input=false "module.${MODULE}.azurerm_resource_group.app_grp" "/subscriptions/${ARM_SUBSCRIPTION_ID}/resourceGroups/rg-${MODULE}" || true
+        terraform import \
+        -var-file="$TFVARS_FILE" \
+        -var="env=${ENVIRONMENT}" \
+        -input=false \
+        "module.${MODULE}.azurerm_resource_group.app_grp" \
+        "/subscriptions/${ARM_SUBSCRIPTION_ID}/resourceGroups/rg-${MODULE}-${ENVIRONMENT}" || true
         RG_IMPORTED="true"
     else
         echo "=== Resource group import already attempted, skipping import. ==="
@@ -95,7 +118,10 @@ function extract_and_import() {
         RESNAME=$(echo "$with_line" | sed -n 's/.*with \(module\.[^,]*\),.*/\1/p')
         if [[ -n "$ID" && -n "$RESNAME" ]]; then
             echo "=== Importing resource: ${RESNAME} with ID: ${ID} ==="
-            terraform import -var-file="$TFVARS_FILE" -input=false "${RESNAME}" "${ID}"
+            terraform import \
+            -var-file="$TFVARS_FILE" \
+            -var="env=${ENVIRONMENT}" \
+            -input=false "${RESNAME}" "${ID}"
         fi
     done
     
@@ -104,7 +130,7 @@ function extract_and_import() {
 
 # --- Function to clean up temporary files and credentials ---
 function cleanup() {
-    rm -f "credentials.tfvars"
+    rm -f "$TFVARS_FILE"
 }
 
 # --- Main execution loop ---

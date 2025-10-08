@@ -14,3 +14,9 @@ variable "client_secret" {
   type      = string
   sensitive = true
 }
+
+variable "env" {
+  description = "Deployment environment (e.g. dev, qa, prod)"
+  type        = string
+  default     = ""
+}

@@ -16,14 +16,6 @@ resource "local_file" "linuxkey" {
   content  = tls_private_key.linux_key.private_key_pem
 }
 
-resource "azurerm_network_watcher" "watcher" {
-  name                = "app-network-watcher"
-  location            = local.location
-  resource_group_name = local.rg_name
-
-  depends_on = [azurerm_resource_group.app_grp]
-}
-
 resource "azurerm_virtual_network" "app_network" {
   name                = "app-network"
   location            = local.location
