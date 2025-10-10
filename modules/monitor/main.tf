@@ -15,14 +15,6 @@ resource "azurerm_resource_group" "app_grp" {
   location = local.location
 }
 
-resource "azurerm_network_watcher" "watcher" {
-  name                = "app-network-watcher"
-  location            = local.location
-  resource_group_name = local.rg_name
-
-  depends_on = [azurerm_resource_group.app_grp]
-}
-
 resource "azurerm_virtual_network" "vnet" {
   name                = "monitor-vnet"
   address_space       = ["10.0.0.0/16"]
@@ -188,27 +180,27 @@ resource "null_resource" "configure_monitor" {
   }
 
   provisioner "file" {
-    source      = "modules/monitor/resources/Caddyfile"
+    source      = "${path.module}/resources/Caddyfile"
     destination = "/tmp/Caddyfile"
   }
 
   provisioner "file" {
-    source      = "modules/monitor/resources/remote-exec.sh"
+    source      = "${path.module}/resources/remote-exec.sh"
     destination = "/tmp/remote-exec.sh"
   }
 
   provisioner "file" {
-    source      = "modules/monitor/resources/monitor-setup.sh"
+    source      = "${path.module}/resources/monitor-setup.sh"
     destination = "/tmp/monitor-setup.sh"
   }
 
   provisioner "file" {
-    source      = "modules/monitor/resources/api.linux.yaml"
+    source      = "${path.module}/resources/api.linux.yaml"
     destination = "/tmp/api.linux.yaml"
   }
 
   provisioner "file" {
-    source      = "modules/monitor/resources/web.linux.yaml"
+    source      = "${path.module}/resources/web.linux.yaml"
     destination = "/tmp/web.linux.yaml"
   }
 

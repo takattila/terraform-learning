@@ -3,14 +3,6 @@ resource "azurerm_resource_group" "app_grp" {
   location = local.location
 }
 
-resource "azurerm_network_watcher" "watcher" {
-  name                = "app-network-watcher"
-  location            = local.location
-  resource_group_name = local.rg_name
-
-  depends_on = [azurerm_resource_group.app_grp]
-}
-
 resource "azurerm_virtual_network" "app_network" {
   name                = "app-network"
   location            = local.location
@@ -175,7 +167,7 @@ resource "azurerm_storage_container" "data" {
 
 resource "azurerm_storage_blob" "IIS_Config" {
   name                   = "IIS_Config.ps1"
-  source                 = "modules/vm-win/resources/IIS_Config.ps1"
+  source                 = "${path.module}/vm-win/resources/IIS_Config.ps1"
   type                   = "Block"
   storage_account_name   = azurerm_storage_account.appstore.name
   storage_container_name = azurerm_storage_container.data.name

@@ -24,3 +24,9 @@ variable "storage_account_name" {
   description = "The name of the storage account for the backend."
   default     = "tfbackendstorage"
 }
+
+variable "env" {
+  description = "Deployment environment (e.g. dev, qa, prod)"
+  type        = string
+  default     = "prod"
+}

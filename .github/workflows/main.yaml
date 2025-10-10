@@ -1,20 +1,24 @@
-name: Terraform Modules Plan
+name: Terraform Plan
 
 on:
   push:
     paths:
       - 'modules/**'
+      - 'env/**'
       - '.github/workflows/main.yaml'
-      - '**.tf'
   pull_request:
     paths:
       - 'modules/**'
+      - 'env/**'
       - '.github/workflows/main.yaml'
-      - '**.tf'
 
 jobs:
-  check-modules:
+  check-environments:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        environment: [dev, qa, prod]
 
     steps:
       - name: Checkout repository
@@ -32,15 +36,18 @@ jobs:
           tenant_id       = "${{ secrets.ARM_TENANT_ID }}"
           EOF
 
-      - name: Terraform Init (root)
+      - name: Terraform Init
+        working-directory: env/${{ matrix.environment }}
         run: terraform init
 
-      - name: Terraform validate (root)
+      - name: Terraform Fmt
+        working-directory: env/${{ matrix.environment }}
+        run: terraform fmt -check
+
+      - name: Terraform Validate
+        working-directory: env/${{ matrix.environment }}
         run: terraform validate
 
-      - name: Terraform Plan for all modules
-        run: |
-          for module in $(ls modules/* -d | xargs -n1 basename); do
-            echo "===== Plan for module.$module ====="
-            terraform plan -var-file="credentials.tfvars" -target="module.$module" -out="$module.tfplan"
-          done
+      - name: Terraform Plan
+        working-directory: env/${{ matrix.environment }}
+        run: terraform plan -var-file="../../credentials.tfvars" -out="tfplan"
