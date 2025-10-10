@@ -71,9 +71,6 @@ terraform -chdir="env/dev" plan -var-file="../../credentials.tfvars" -target="mo
 # Deploy resources
 terraform -chdir="env/dev" apply -auto-approve "<module>.tfplan"
 
-# Alternatively you can use scripts/apply.sh
-bash scripts/apply.sh <module> dev
-
 # Remove resources
 terraform -chdir="env/dev" destroy -var-file="../../credentials.tfvars" -target="module.<module>" -auto-approve
 ```
@@ -88,9 +85,6 @@ terraform -chdir="env/dev" plan -var-file="../../credentials.tfvars" -target="mo
 
 # Deploy resources
 terraform -chdir="env/dev" apply -auto-approve "cloud-init-nginx.tfplan"
-
-# Alternatively you can use scripts/apply.sh
-bash scripts/apply.sh cloud-init-nginx dev
 
 # Print output
 terraform -chdir="env/dev" output -raw cloud_init_nginx_ssh_command
@@ -109,9 +103,6 @@ terraform -chdir="env/dev" plan -var-file="../../credentials.tfvars" -target="mo
 
 # Deploy resources
 terraform -chdir="env/dev" apply -auto-approve "keyvault.tfplan"
-
-# Alternatively you can use scripts/apply.sh
-bash scripts/apply.sh keyvault dev
 
 # Print output
 terraform -chdir="env/dev" output -raw keyvault_rdp_file > keyvault.rdp
@@ -132,9 +123,6 @@ terraform -chdir="env/dev" plan -var-file="../../credentials.tfvars" -target="mo
 # Deploy resources
 terraform -chdir="env/dev" apply -auto-approve "monitor.tfplan"
 
-# Alternatively you can use scripts/apply.sh
-bash scripts/apply.sh monitor dev
-
 # Print output
 terraform -chdir="env/dev" output monitor_service_urls
 terraform -chdir="env/dev" output -raw monitor_ssh_command
@@ -151,9 +139,6 @@ terraform -chdir="env/dev" plan -var-file="../../credentials.tfvars" -target="mo
 
 # Deploy resources
 terraform -chdir="env/dev" apply -auto-approve "sql.tfplan"
-
-# Alternatively you can use scripts/apply.sh
-bash scripts/apply.sh sql dev
 
 # Print output
 terraform -chdir="env/dev" output -raw sql_database_id
@@ -173,9 +158,6 @@ terraform -chdir="env/dev" plan -var-file="../../credentials.tfvars" -target="mo
 # Deploy resources
 terraform -chdir="env/dev" apply -auto-approve "storage.tfplan"
 
-# Alternatively you can use scripts/apply.sh
-bash scripts/apply.sh storage dev
-
 # Print output
 terraform -chdir="env/dev" output -raw storage_sample_txt_url
 
@@ -192,9 +174,6 @@ terraform -chdir="env/dev" plan -var-file="../../credentials.tfvars" -target="mo
 # Deploy resources
 terraform -chdir="env/dev" apply -auto-approve "vm-linux.tfplan"
 
-# Alternatively you can use scripts/apply.sh
-bash scripts/apply.sh vm-linux dev
-
 # Print output
 terraform -chdir="env/dev" output -raw vm_linux_ssh_command
 
@@ -210,9 +189,6 @@ terraform -chdir="env/dev" plan -var-file="../../credentials.tfvars" -target="mo
 
 # Deploy resources
 terraform -chdir="env/dev" apply -auto-approve "vm-win.tfplan"
-
-# Alternatively you can use scripts/apply.sh
-bash scripts/apply.sh vm-win dev
 
 # Print output
 terraform -chdir="env/dev" output -raw vm_win_rdp_file > vm-win.rdp
@@ -233,9 +209,6 @@ terraform -chdir="env/dev" plan -var-file="../../credentials.tfvars" -target="mo
 # Deploy resources
 terraform -chdir="env/dev" apply -auto-approve "vnet.tfplan"
 
-# Alternatively you can use scripts/apply.sh
-bash scripts/apply.sh vnet dev
-
 # Print output
 terraform -chdir="env/dev" output -raw vnet_name
 terraform -chdir="env/dev" output -raw subnet_name
@@ -254,9 +227,6 @@ terraform -chdir="env/dev" plan -var-file="../../credentials.tfvars" -target="mo
 
 # Deploy resources
 terraform -chdir="env/dev" apply -auto-approve "webapp.tfplan"
-
-# Alternatively you can use scripts/apply.sh
-bash scripts/apply.sh webapp dev
 
 # Print output
 terraform -chdir="env/dev" output -raw webapp_name
